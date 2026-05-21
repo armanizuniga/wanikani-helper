@@ -2,9 +2,9 @@
 
 [WaniKani](https://www.wanikani.com) is a web-based Japanese kanji learning platform that uses spaced repetition (SRS) to teach radicals, kanji, and vocabulary.
 
-The further you progress the easier it is for reviews to pile up, and missing a day might mean you come back to hundreds of reviews waiting for you. Trying to get through them can be time consuming and tedious. WaniKani requires you to type your answers, and it is strict about what it accepts — specific romanizations, exact meanings, and particular phrasing for vocabulary. A single typo or a word that's close but not quite right counts as incorrect and pushes that item back in the SRS queue. Every mistake feels like a setback and the whole thing starts to feel impossible to catch up on.
+The further you progress the easier it is for reviews to pile up, and missing a day might mean you come back to hundreds waiting. WaniKani is strict about what it accepts — specific romanizations, exact meanings, and particular phrasing for vocabulary — so a typo or a close but wrong answer counts as incorrect and every mistake feels like a setback. It gets time consuming and starts to feel impossible to catch up on.
 
-This app is built to fix that. It swaps the type-in input for multiple choice so there are no typos and you can move through reviews much faster. The goal is just to make it feel manageable enough that you actually want to sit down and do them. It connects to WaniKani through their official API using your own API key, so your reviews and lessons are always pulling from your real account and results are submitted back as you go.
+WaniKani Helper is a free iOS app built to fix that. It swaps the type-in input for multiple choice so there are no typos and you can move through reviews much faster. The goal is just to make it feel manageable enough that you actually want to sit down and do them. It connects to WaniKani through their official API using your own API key, so your reviews and lessons always pull from your real account and results are submitted back as you go.
 
 ---
 
