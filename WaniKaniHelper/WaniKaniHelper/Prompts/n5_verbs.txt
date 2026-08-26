@@ -1,0 +1,7 @@
+# Basic Verb Forms (ru-verbs and u-verbs)
+Ru-verbs end in る preceded by an e or i sound: 食べる、見る. Drop る to get the stem.
+U-verbs end in a u-row sound: 書く、飲む、話す. The stem changes depending on the ending.
+Negative plain: ru-verb stem + ない / u-verb: change u→a + ない (e.g. 書く→書かない).
+Past plain: ru-verb stem + た / u-verb: various sound changes (書く→書いた, 飲む→飲んだ).
+Past-negative: [negative stem] + なかった (e.g. 食べなかった, 書かなかった).
+Use plain forms in casual speech; combine with ます/ました for polite speech.

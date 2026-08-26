@@ -1,0 +1,7 @@
+# Similarity and Hearsay (よう、みたい、〜そう、らしい、っぽい)
+よう expresses resemblance or manner (formal): まるで夢(ゆめ)のようだ (it's like a dream).
+みたい is the casual equivalent: 夢みたい！
+〜そう (appearance-based): attaches to verb/adj stem — おいしそう (looks delicious), 降(ふ)りそう (looks like it'll rain).
+〜そうだ (hearsay): attaches to plain form — 明日(あした)、雨(あめ)が降るそうだ (I heard it will rain).
+らしい expresses inference based on evidence or reputation: 彼(かれ)は忙(いそが)しいらしい (he seems to be busy).
+っぽい is casual — feels like, seems kinda: 子供(こども)っぽい (childish-ish).

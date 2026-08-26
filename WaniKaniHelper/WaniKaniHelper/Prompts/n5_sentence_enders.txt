@@ -1,0 +1,6 @@
+# Sentence-ending Particles (ね、よ、よね)
+ね seeks agreement or shared feeling, like "right?" or "isn't it?": いい天気(てんき)ですね。
+よ asserts information the speaker believes the listener doesn't know: これ、おいしいですよ。
+よね combines both: the speaker asserts something and seeks confirmation: 明日(あした)、休(やす)みですよね。
+These particles soften or add nuance to a statement — they do not change the core meaning.
+Place them at the very end of the sentence, after です/ます or plain-form verbs.

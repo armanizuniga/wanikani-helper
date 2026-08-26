@@ -1,0 +1,821 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		200F2FA02FB60F09000A5415 /* MLXLLM in Frameworks */ = {isa = PBXBuildFile; productRef = 200F2F9F2FB60F09000A5415 /* MLXLLM */; };
+		200F2FA22FB60F09000A5415 /* MLXLMCommon in Frameworks */ = {isa = PBXBuildFile; productRef = 200F2FA12FB60F09000A5415 /* MLXLMCommon */; };
+		2070CF38300E6A27009B049C /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2070CF37300E6A27009B049C /* WidgetKit.framework */; };
+		2070CF3A300E6A27009B049C /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2070CF39300E6A27009B049C /* SwiftUI.framework */; };
+		2070CF49300E6A28009B049C /* WaniWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 2070CF35300E6A27009B049C /* WaniWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		2070CF47300E6A28009B049C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 20E1AD3D2FA89B690030363C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2070CF34300E6A27009B049C;
+			remoteInfo = WaniWidgetExtension;
+		};
+		20E1AD532FA89B6B0030363C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 20E1AD3D2FA89B690030363C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 20E1AD442FA89B690030363C;
+			remoteInfo = WaniKaniHelper;
+		};
+		20E1AD5D2FA89B6B0030363C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 20E1AD3D2FA89B690030363C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 20E1AD442FA89B690030363C;
+			remoteInfo = WaniKaniHelper;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		2070CF4A300E6A28009B049C /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				2070CF49300E6A28009B049C /* WaniWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		2070CF35300E6A27009B049C /* WaniWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WaniWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		2070CF37300E6A27009B049C /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		2070CF39300E6A27009B049C /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		2070CF50300E6AC6009B049C /* WaniWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WaniWidgetExtension.entitlements; sourceTree = "<group>"; };
+		20E1AD452FA89B690030363C /* WaniKaniHelper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WaniKaniHelper.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		20E1AD522FA89B6B0030363C /* WaniKaniHelperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WaniKaniHelperTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		20E1AD5C2FA89B6B0030363C /* WaniKaniHelperUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WaniKaniHelperUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		2070CF4D300E6A28009B049C /* Exceptions for "WaniWidget" folder in "WaniWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 2070CF34300E6A27009B049C /* WaniWidgetExtension */;
+		};
+		2070CF52300E6B80009B049C /* Exceptions for "WaniKaniHelper" folder in "WaniWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Shared/WidgetSharedStore.swift,
+				Shared/WidgetWord.swift,
+			);
+			target = 2070CF34300E6A27009B049C /* WaniWidgetExtension */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		2070CF3B300E6A27009B049C /* WaniWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				2070CF4D300E6A28009B049C /* Exceptions for "WaniWidget" folder in "WaniWidgetExtension" target */,
+			);
+			path = WaniWidget;
+			sourceTree = "<group>";
+		};
+		20E1AD472FA89B690030363C /* WaniKaniHelper */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				2070CF52300E6B80009B049C /* Exceptions for "WaniKaniHelper" folder in "WaniWidgetExtension" target */,
+			);
+			path = WaniKaniHelper;
+			sourceTree = "<group>";
+		};
+		20E1AD552FA89B6B0030363C /* WaniKaniHelperTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = WaniKaniHelperTests;
+			sourceTree = "<group>";
+		};
+		20E1AD5F2FA89B6B0030363C /* WaniKaniHelperUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = WaniKaniHelperUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2070CF32300E6A27009B049C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2070CF3A300E6A27009B049C /* SwiftUI.framework in Frameworks */,
+				2070CF38300E6A27009B049C /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		20E1AD422FA89B690030363C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				200F2FA22FB60F09000A5415 /* MLXLMCommon in Frameworks */,
+				200F2FA02FB60F09000A5415 /* MLXLLM in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		20E1AD4F2FA89B6B0030363C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		20E1AD592FA89B6B0030363C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2070CF36300E6A27009B049C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				2070CF37300E6A27009B049C /* WidgetKit.framework */,
+				2070CF39300E6A27009B049C /* SwiftUI.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		20E1AD3C2FA89B690030363C = {
+			isa = PBXGroup;
+			children = (
+				2070CF50300E6AC6009B049C /* WaniWidgetExtension.entitlements */,
+				20E1AD472FA89B690030363C /* WaniKaniHelper */,
+				20E1AD552FA89B6B0030363C /* WaniKaniHelperTests */,
+				20E1AD5F2FA89B6B0030363C /* WaniKaniHelperUITests */,
+				2070CF3B300E6A27009B049C /* WaniWidget */,
+				2070CF36300E6A27009B049C /* Frameworks */,
+				20E1AD462FA89B690030363C /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		20E1AD462FA89B690030363C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				20E1AD452FA89B690030363C /* WaniKaniHelper.app */,
+				20E1AD522FA89B6B0030363C /* WaniKaniHelperTests.xctest */,
+				20E1AD5C2FA89B6B0030363C /* WaniKaniHelperUITests.xctest */,
+				2070CF35300E6A27009B049C /* WaniWidgetExtension.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		2070CF34300E6A27009B049C /* WaniWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2070CF4E300E6A28009B049C /* Build configuration list for PBXNativeTarget "WaniWidgetExtension" */;
+			buildPhases = (
+				2070CF31300E6A27009B049C /* Sources */,
+				2070CF32300E6A27009B049C /* Frameworks */,
+				2070CF33300E6A27009B049C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				2070CF3B300E6A27009B049C /* WaniWidget */,
+			);
+			name = WaniWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = WaniWidgetExtension;
+			productReference = 2070CF35300E6A27009B049C /* WaniWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		20E1AD442FA89B690030363C /* WaniKaniHelper */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 20E1AD662FA89B6B0030363C /* Build configuration list for PBXNativeTarget "WaniKaniHelper" */;
+			buildPhases = (
+				20E1AD412FA89B690030363C /* Sources */,
+				20E1AD422FA89B690030363C /* Frameworks */,
+				20E1AD432FA89B690030363C /* Resources */,
+				2070CF4A300E6A28009B049C /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2070CF48300E6A28009B049C /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				20E1AD472FA89B690030363C /* WaniKaniHelper */,
+			);
+			name = WaniKaniHelper;
+			packageProductDependencies = (
+				200F2F9F2FB60F09000A5415 /* MLXLLM */,
+				200F2FA12FB60F09000A5415 /* MLXLMCommon */,
+			);
+			productName = WaniKaniHelper;
+			productReference = 20E1AD452FA89B690030363C /* WaniKaniHelper.app */;
+			productType = "com.apple.product-type.application";
+		};
+		20E1AD512FA89B6B0030363C /* WaniKaniHelperTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 20E1AD692FA89B6B0030363C /* Build configuration list for PBXNativeTarget "WaniKaniHelperTests" */;
+			buildPhases = (
+				20E1AD4E2FA89B6B0030363C /* Sources */,
+				20E1AD4F2FA89B6B0030363C /* Frameworks */,
+				20E1AD502FA89B6B0030363C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				20E1AD542FA89B6B0030363C /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				20E1AD552FA89B6B0030363C /* WaniKaniHelperTests */,
+			);
+			name = WaniKaniHelperTests;
+			packageProductDependencies = (
+			);
+			productName = WaniKaniHelperTests;
+			productReference = 20E1AD522FA89B6B0030363C /* WaniKaniHelperTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		20E1AD5B2FA89B6B0030363C /* WaniKaniHelperUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 20E1AD6C2FA89B6B0030363C /* Build configuration list for PBXNativeTarget "WaniKaniHelperUITests" */;
+			buildPhases = (
+				20E1AD582FA89B6B0030363C /* Sources */,
+				20E1AD592FA89B6B0030363C /* Frameworks */,
+				20E1AD5A2FA89B6B0030363C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				20E1AD5E2FA89B6B0030363C /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				20E1AD5F2FA89B6B0030363C /* WaniKaniHelperUITests */,
+			);
+			name = WaniKaniHelperUITests;
+			packageProductDependencies = (
+			);
+			productName = WaniKaniHelperUITests;
+			productReference = 20E1AD5C2FA89B6B0030363C /* WaniKaniHelperUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		20E1AD3D2FA89B690030363C /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2660;
+				LastUpgradeCheck = 2640;
+				TargetAttributes = {
+					2070CF34300E6A27009B049C = {
+						CreatedOnToolsVersion = 26.6;
+					};
+					20E1AD442FA89B690030363C = {
+						CreatedOnToolsVersion = 26.4.1;
+					};
+					20E1AD512FA89B6B0030363C = {
+						CreatedOnToolsVersion = 26.4.1;
+						TestTargetID = 20E1AD442FA89B690030363C;
+					};
+					20E1AD5B2FA89B6B0030363C = {
+						CreatedOnToolsVersion = 26.4.1;
+						TestTargetID = 20E1AD442FA89B690030363C;
+					};
+				};
+			};
+			buildConfigurationList = 20E1AD402FA89B690030363C /* Build configuration list for PBXProject "WaniKaniHelper" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 20E1AD3C2FA89B690030363C;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				200F2F9E2FB60F09000A5415 /* XCRemoteSwiftPackageReference "mlx-swift-examples" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 20E1AD462FA89B690030363C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				20E1AD442FA89B690030363C /* WaniKaniHelper */,
+				20E1AD512FA89B6B0030363C /* WaniKaniHelperTests */,
+				20E1AD5B2FA89B6B0030363C /* WaniKaniHelperUITests */,
+				2070CF34300E6A27009B049C /* WaniWidgetExtension */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		2070CF33300E6A27009B049C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		20E1AD432FA89B690030363C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		20E1AD502FA89B6B0030363C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		20E1AD5A2FA89B6B0030363C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		2070CF31300E6A27009B049C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		20E1AD412FA89B690030363C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		20E1AD4E2FA89B6B0030363C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		20E1AD582FA89B6B0030363C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		2070CF48300E6A28009B049C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2070CF34300E6A27009B049C /* WaniWidgetExtension */;
+			targetProxy = 2070CF47300E6A28009B049C /* PBXContainerItemProxy */;
+		};
+		20E1AD542FA89B6B0030363C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 20E1AD442FA89B690030363C /* WaniKaniHelper */;
+			targetProxy = 20E1AD532FA89B6B0030363C /* PBXContainerItemProxy */;
+		};
+		20E1AD5E2FA89B6B0030363C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 20E1AD442FA89B690030363C /* WaniKaniHelper */;
+			targetProxy = 20E1AD5D2FA89B6B0030363C /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		2070CF4B300E6A28009B049C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = WaniWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QXL258W3MH;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = WaniWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = WaniWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = ArmaniZuniga.WaniKaniHelper.WaniWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		2070CF4C300E6A28009B049C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = WaniWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QXL258W3MH;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = WaniWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = WaniWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = ArmaniZuniga.WaniKaniHelper.WaniWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		20E1AD642FA89B6B0030363C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		20E1AD652FA89B6B0030363C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		20E1AD672FA89B6B0030363C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"ASSETCATALOG_COMPILER_APPICON_NAME[sdk=iphoneos*]" = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CODE_SIGN_ENTITLEMENTS = WaniKaniHelper/WaniKaniHelper.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QXL258W3MH;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Fuyu;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = ArmaniZuniga.WaniKaniHelper;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		20E1AD682FA89B6B0030363C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CODE_SIGN_ENTITLEMENTS = WaniKaniHelper/WaniKaniHelper.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QXL258W3MH;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Fuyu;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = ArmaniZuniga.WaniKaniHelper;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		20E1AD6A2FA89B6B0030363C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = ArmaniZuniga.WaniKaniHelperTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/WaniKaniHelper.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/WaniKaniHelper";
+			};
+			name = Debug;
+		};
+		20E1AD6B2FA89B6B0030363C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = ArmaniZuniga.WaniKaniHelperTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/WaniKaniHelper.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/WaniKaniHelper";
+			};
+			name = Release;
+		};
+		20E1AD6D2FA89B6B0030363C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QXL258W3MH;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = ArmaniZuniga.WaniKaniHelperUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = WaniKaniHelper;
+			};
+			name = Debug;
+		};
+		20E1AD6E2FA89B6B0030363C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QXL258W3MH;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = ArmaniZuniga.WaniKaniHelperUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = WaniKaniHelper;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2070CF4E300E6A28009B049C /* Build configuration list for PBXNativeTarget "WaniWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2070CF4B300E6A28009B049C /* Debug */,
+				2070CF4C300E6A28009B049C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		20E1AD402FA89B690030363C /* Build configuration list for PBXProject "WaniKaniHelper" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				20E1AD642FA89B6B0030363C /* Debug */,
+				20E1AD652FA89B6B0030363C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		20E1AD662FA89B6B0030363C /* Build configuration list for PBXNativeTarget "WaniKaniHelper" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				20E1AD672FA89B6B0030363C /* Debug */,
+				20E1AD682FA89B6B0030363C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		20E1AD692FA89B6B0030363C /* Build configuration list for PBXNativeTarget "WaniKaniHelperTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				20E1AD6A2FA89B6B0030363C /* Debug */,
+				20E1AD6B2FA89B6B0030363C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		20E1AD6C2FA89B6B0030363C /* Build configuration list for PBXNativeTarget "WaniKaniHelperUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				20E1AD6D2FA89B6B0030363C /* Debug */,
+				20E1AD6E2FA89B6B0030363C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		200F2F9E2FB60F09000A5415 /* XCRemoteSwiftPackageReference "mlx-swift-examples" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ml-explore/mlx-swift-examples";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.29.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		200F2F9F2FB60F09000A5415 /* MLXLLM */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 200F2F9E2FB60F09000A5415 /* XCRemoteSwiftPackageReference "mlx-swift-examples" */;
+			productName = MLXLLM;
+		};
+		200F2FA12FB60F09000A5415 /* MLXLMCommon */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 200F2F9E2FB60F09000A5415 /* XCRemoteSwiftPackageReference "mlx-swift-examples" */;
+			productName = MLXLMCommon;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 20E1AD3D2FA89B690030363C /* Project object */;
+}

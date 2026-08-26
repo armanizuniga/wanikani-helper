@@ -1,0 +1,6 @@
+# Passive (〜られる — be done to)
+Ru-verbs: replace る with られる → 食べられる. U-verbs: change u→a + れる → 書かれる. する→される、くる→こられる.
+Direct passive: the subject receives the action — ケーキが食(た)べられた (the cake was eaten).
+Indirect/suffering passive: the subject is adversely affected — 雨(あめ)に降(ふ)られた (I was rained on / the rain came down on me).
+Japanese passive is often used to show the subject as the affected party, not just to avoid naming the agent.
+Passive is also used for politeness: こちらにご記入(きにゅう)いただけますか。

@@ -1,0 +1,7 @@
+# Conditionals (と、なら、ば、たら、もし)
+と: natural/automatic consequence — if A then B always follows: 春(はる)になると、桜(さくら)が咲(さ)く.
+なら: contextual conditional — given that A is the case: 行くなら、早(はや)く出(で)た方(ほう)がいい.
+ば: general "if" conditional — [i-adj stem + ければ], [verb e-stem + ば]: 安ければ買う.
+たら: "when/if" — after something happens/happened: 家(いえ)に帰(かえ)ったら、電話(でんわ)して.
+もし softens any conditional — adds "if by any chance": もし時間(じかん)があれば、来てください.
+たら is the most versatile and common conditional for everyday speech.

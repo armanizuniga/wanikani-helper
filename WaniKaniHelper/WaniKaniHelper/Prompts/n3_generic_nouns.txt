@@ -1,0 +1,4 @@
+# Generic Nouns (こと、ところ、もの)
+こと turns a verb into an abstract noun/fact: 日本語(にほんご)を話(はな)すことが好(す)き (I like speaking Japanese). Also used in こと + がある to express experience: 食べたことがある.
+ところ refers to an abstract point in time or state: 今(いま)、出(で)るところだ (I'm just about to leave). Also: 〜たところ = just finished.
+もの refers to something natural, expected, or emotionally felt: そういうものだ (that's just how it is). 〜てもらいたいものだ expresses a wish with feeling.

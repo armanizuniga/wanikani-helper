@@ -1,0 +1,6 @@
+# Noun-linking Particles (と、や/とか、の)
+と links nouns exhaustively: AとB = A and B (complete list): パンとバター.
+や lists nouns non-exhaustively (among other things): AやB = A and B and so on: 本(ほん)やペン.
+とか is the casual equivalent of や: ゲームとか映画(えいが)とか.
+の as nominalizer turns a verb or clause into a noun-like concept: 走(はし)るのが好(す)き = I like running.
+の can also link nouns possessively or descriptively: 日本(にほん)の食(た)べ物(もの) = Japanese food.

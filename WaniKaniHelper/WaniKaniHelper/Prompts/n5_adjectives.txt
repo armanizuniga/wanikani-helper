@@ -1,0 +1,6 @@
+# Adjective Conjugation (i-adjectives and na-adjectives)
+i-adjectives end in い. To negate: drop い → add くない. Past: drop い → add かった. Past-negative: drop い → add くなかった.
+Na-adjectives behave like nouns: add だ/です for present, じゃない for negative, だった for past.
+Exception: いい (good) uses よ- stem in all conjugations → よくない、よかった、よくなかった.
+Structure for i-adj: [stem] + い / くない / かった / くなかった
+Structure for na-adj: [word] + だ / じゃない / だった / じゃなかった

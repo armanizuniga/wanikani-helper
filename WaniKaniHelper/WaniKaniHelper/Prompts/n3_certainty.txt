@@ -1,0 +1,5 @@
+# Expressing Certainty and Probability (かもしれない、でしょう、だろう)
+かもしれない expresses uncertainty/possibility — "might/maybe": 雨(あめ)が降(ふ)るかもしれない (it might rain).
+でしょう is a polite probabilistic assertion or seeks confirmation — "probably / right?": 明日(あした)は晴(は)れるでしょう.
+だろう is the plain form of でしょう — expresses a reasonable assumption: 彼(かれ)は知(し)ってるだろう.
+かもしれない is more uncertain than でしょう. でしょう/だろう imply the speaker has a basis for their guess.

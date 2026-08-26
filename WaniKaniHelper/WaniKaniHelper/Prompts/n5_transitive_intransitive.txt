@@ -1,0 +1,5 @@
+# Transitive vs Intransitive Verbs
+Transitive verbs take a direct object marked by を — someone does the action to something: 窓(まど)を開(あ)ける (open the window).
+Intransitive verbs describe something happening on its own, with が or は: 窓が開(あ)く (the window opens).
+Common pairs: 開ける(transitive)/開く(intransitive), 閉める/閉まる, 入れる/入る, 出す/出る, 起こす/起きる.
+Never use を with an intransitive verb — use が or は instead.

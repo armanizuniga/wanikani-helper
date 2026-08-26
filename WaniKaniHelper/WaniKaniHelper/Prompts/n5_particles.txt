@@ -1,0 +1,8 @@
+# Core Particles (は、が、を、に、で、へ、も、の)
+は marks the topic of the sentence. が marks the grammatical subject or identifier.
+を marks the direct object of an action verb.
+に marks a destination (going to), a point in time (at 3 o'clock), or an indirect object (give to someone).
+で marks where an action takes place (at/in a location) or the means used (by car, in Japanese).
+へ marks direction of movement (toward a place). も replaces は/が/を to mean "also / too / either."
+の links two nouns to show possession or description (私の本 = my book).
+Use only the one or two particles most relevant to the sentence — keep it natural.

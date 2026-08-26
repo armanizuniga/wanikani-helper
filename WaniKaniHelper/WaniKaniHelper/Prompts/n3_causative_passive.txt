@@ -1,0 +1,6 @@
+# Causative-Passive (〜させられる — be made to do)
+Combine causative + passive: someone forces the subject to do something against their will.
+Ru-verbs: させられる → 食べさせられる. U-verbs: あ-stem + せられる (or contracted させられる) → 書かせられる.
+Always implies unwillingness or compulsion from an outside force.
+Example: 上司(じょうし)に残業(ざんぎょう)させられた (I was made to work overtime by my boss).
+The contracted form 〜される is common in casual speech for u-verbs: 書かされた.

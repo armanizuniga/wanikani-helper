@@ -1,0 +1,7 @@
+# State of Being (だ / です)
+Attach だ (plain) or です (polite) after a noun or na-adjective to assert identity or existence.
+Negative plain: じゃない / Negative polite: じゃありません
+Past plain: だった / Past polite: でした
+Past-negative plain: じゃなかった / Past-negative polite: じゃありませんでした
+Structure: [noun / na-adjective] + だ/です
+Use だ in casual speech with friends; use です in polite or formal situations.

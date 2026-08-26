@@ -1,0 +1,5 @@
+# Relative Clauses and Sentence Order
+In Japanese, modifiers come before the noun they describe. A verb or state-of-being in plain form can directly modify a noun.
+Structure: [plain-form clause] + noun (e.g. 昨日(きのう)食(た)べたラーメン = the ramen I ate yesterday).
+The subject of the relative clause takes が (not は) inside the clause: 私が作(つく)った料理(りょうり) = the dish I made.
+Japanese sentence order: topic → subject → object → verb. Keep descriptive clauses directly before the noun they modify.

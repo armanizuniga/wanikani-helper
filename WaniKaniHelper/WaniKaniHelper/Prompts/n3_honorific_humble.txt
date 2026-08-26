@@ -1,0 +1,5 @@
+# Honorific and Humble Speech (keigo)
+Honorific raises the listener's actions: お〜になる (e.g. お読(よ)みになる — you read). Set expressions: いらっしゃる (be/go/come), おっしゃる (say), くださる (give to me), なさる (do).
+Humble lowers the speaker's actions: お〜する (e.g. お持(も)ちする — I will carry). Set expressions: おります (I am), 申(もう)します (I am called), いたす (I do), いただく (I receive/eat).
+Use honorific for the other person's actions; use humble for your own.
+In service contexts (stores, offices), honorific/humble speech is expected even for basic requests.

@@ -1,0 +1,6 @@
+# Te-form Extended Uses (ている、てある、ておく、ていく/てくる)
+ている expresses an ongoing action or habitual state: 今(いま)、食(た)べている / 毎日(まいにち)運動(うんどう)している.
+てある describes a resultant state left intentionally by someone: 窓(まど)が開(あ)けてある (the window has been left open).
+ておく means to do something in preparation or advance: メモしておく (I'll make a note of it).
+ていく means to do and go (action moves away from speaker): 持(も)っていく (take it along).
+てくる means to do and come back, or for something to begin/emerge: 持ってくる (bring it here); 寒(さむ)くなってきた (it's gotten cold).

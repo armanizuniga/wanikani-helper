@@ -1,0 +1,6 @@
+# Causative (〜させる — make/let someone do)
+Ru-verbs: replace る with させる → 食べさせる. U-verbs: change u→a + せる → 書かせる. する→させる、くる→こさせる.
+Causative can mean "make someone do" (coercive) or "let someone do" (permissive) — context determines which.
+Structure: [causer] が/は [causee] を/に [causative verb]
+Use を when the causee is being made to do something against their will; use に when permission is granted.
+Polite causative: させていただく (humbly letting/allowing oneself) is very common in formal situations.

@@ -1,0 +1,7 @@
+# Compound Sentences (て-form、から/ので、のに、が/けど、し、〜たりする)
+Te-form sequences actions: 起(お)きて、シャワーを浴(あ)びて、学校(がっこう)に行(い)く.
+から states a reason (subjective/direct): 雨(あめ)だから、行かない. ので is more objective/polite: 雨なので、行きません.
+のに expresses frustration or surprise despite expectation: 頑張(がんば)ったのに、失敗(しっぱい)した.
+が/けど connects contrasting clauses (but/however): 高(たか)いけど、おいしい.
+し lists multiple reasons or qualities: 安(やす)いし、おいしいし、また来(く)る.
+〜たりする lists representative actions from a larger set: 映画(えいが)を見(み)たり、本を読(よ)んだりする.
