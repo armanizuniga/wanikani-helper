@@ -5,6 +5,9 @@ import SwiftUI
 
 struct AuthView: View {
     let onAuthenticated: (String, WKUserData) -> Void
+    /// Supplied when the screen is reached from Settings rather than first launch: shows a
+    /// Cancel affordance and relabels the action, since there is an account to return to.
+    var onCancel: (() -> Void)? = nil
 
     @State private var apiKey: String = ""
     @State private var isLoading: Bool = false
@@ -13,7 +16,17 @@ struct AuthView: View {
 
     var body: some View {
         VStack(spacing: 32) {
-            Spacer().frame(height: 40) // ← adjust to shift closer/further from Dynamic Island
+            if let onCancel {
+                HStack {
+                    Button("Cancel") { onCancel() }
+                        .font(.system(size: 16, weight: .medium, design: .rounded))
+                        .foregroundStyle(Color("AccentPink"))
+                    Spacer()
+                }
+                .padding(.top, 8)
+            } else {
+                Spacer().frame(height: 40) // ← adjust to shift closer/further from Dynamic Island
+            }
 
             VStack(spacing: 16) {
                 Image("AppLogo")
@@ -82,7 +95,8 @@ struct AuthView: View {
                         if isLoading {
                             ProgressView().tint(.white)
                         } else {
-                            Label("Connect Account", systemImage: "play.fill")
+                            Label(onCancel == nil ? "Connect Account" : "Update Token",
+                                  systemImage: onCancel == nil ? "play.fill" : "checkmark")
                                 .font(.system(size: 17, weight: .bold, design: .rounded))
                         }
                     }

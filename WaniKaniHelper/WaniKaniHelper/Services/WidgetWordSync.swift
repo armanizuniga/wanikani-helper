@@ -34,4 +34,11 @@ enum WidgetWordSync {
         WidgetShared.save(words)
         WidgetCenter.shared.reloadAllTimelines()
     }
+
+    /// Empties the shared pool on sign-out so the previous account's vocabulary doesn't linger
+    /// on the Lock Screen. The widget falls back to its "open the app" state.
+    static func clear() {
+        WidgetShared.save([])
+        WidgetCenter.shared.reloadAllTimelines()
+    }
 }
