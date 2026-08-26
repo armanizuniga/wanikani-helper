@@ -9,6 +9,7 @@ struct HomeView: View {
     let store: SubjectStore
     let kanaStore: KanaSRSStore
     var onApiKeyUpdated: (String, WKUserData) -> Void = { _, _ in }
+    var onSignOut: () -> Void = {}
 
     @State private var kanaScript: KanaScript?
 
@@ -22,9 +23,7 @@ struct HomeView: View {
     @State private var lessonAssignmentCount: Int = 0
     @State private var showReview = false
     @State private var showKanjiReview = false
-    @AppStorage(ReviewSettings.easyModeKey) private var easyMode = false
     @State private var showLessons = false
-    @State private var showEditAPIKey = false
     @State private var dailyCompleted: Int = DailyGoal.completed
     @State private var levelProgress: LevelProgress?
     @State private var levelAssignments: [WKResource<WKAssignmentData>] = []
@@ -216,29 +215,6 @@ struct HomeView: View {
                 }
 
                 Section("Tools") {
-                    Toggle(isOn: $easyMode) {
-                        HStack(spacing: 12) {
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(Color("WKTeal").opacity(0.15))
-                                .frame(width: 36, height: 36)
-                                .overlay {
-                                    Image(systemName: "bolt.fill")
-                                        .foregroundStyle(Color("WKTeal"))
-                                        .font(.system(size: 15, weight: .semibold))
-                                }
-                            VStack(alignment: .leading, spacing: 1) {
-                                Text("Easy Mode")
-                                    .font(.system(size: 16, weight: .medium, design: .rounded))
-                                    .foregroundStyle(.primary)
-                                Text("Meaning-only reviews. Readings auto-pass, so SRS still advances.")
-                                    .font(.system(size: 12))
-                                    .foregroundStyle(.secondary)
-                                    .fixedSize(horizontal: false, vertical: true)
-                            }
-                        }
-                    }
-                    .padding(.vertical, 4)
-
                     Button {
                         showKanjiProgress = true
                     } label: {
@@ -265,53 +241,29 @@ struct HomeView: View {
                     .buttonStyle(.plain)
 
                     NavigationLink {
-                        AIModelSetupView()
+                        SettingsView(
+                            user: user,
+                            store: store,
+                            onApiKeyUpdated: onApiKeyUpdated,
+                            onSignOut: onSignOut
+                        )
                     } label: {
                         HStack(spacing: 12) {
                             RoundedRectangle(cornerRadius: 8)
-                                .fill(Color.indigo.opacity(0.15))
+                                .fill(Color.gray.opacity(0.15))
                                 .frame(width: 36, height: 36)
                                 .overlay {
-                                    Image(systemName: "cpu")
-                                        .foregroundStyle(Color.indigo)
+                                    Image(systemName: "gearshape.fill")
+                                        .foregroundStyle(.gray)
                                         .font(.system(size: 15, weight: .semibold))
                                 }
-                            VStack(alignment: .leading, spacing: 1) {
-                                Text("AI Model")
-                                    .font(.system(size: 16, weight: .medium, design: .rounded))
-                                Text(AIModelManager.shared.activeBackendName)
-                                    .font(.system(size: 12))
-                                    .foregroundStyle(.secondary)
-                            }
-                            Spacer()
-                        }
-                        .padding(.vertical, 4)
-                    }
-
-                    Button {
-                        showEditAPIKey = true
-                    } label: {
-                        HStack(spacing: 12) {
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(Color("WKPlum").opacity(0.15))
-                                .frame(width: 36, height: 36)
-                                .overlay {
-                                    Image(systemName: "key.fill")
-                                        .foregroundStyle(Color("WKPlum"))
-                                        .font(.system(size: 15, weight: .semibold))
-                                }
-                            Text("Edit API Key")
+                            Text("Settings")
                                 .font(.system(size: 16, weight: .medium, design: .rounded))
                                 .foregroundStyle(.primary)
                             Spacer()
-                            Image(systemName: "chevron.right")
-                                .font(.system(size: 13, weight: .semibold))
-                                .foregroundStyle(.tertiary)
                         }
                         .padding(.vertical, 4)
-                        .contentShape(Rectangle())
                     }
-                    .buttonStyle(.plain)
                 }
             }
             .navigationTitle("")
@@ -333,11 +285,6 @@ struct HomeView: View {
             }
             .navigationDestination(isPresented: $showKanjiProgress) {
                 KanjiProgressView(store: store)
-            }
-            .sheet(isPresented: $showEditAPIKey) {
-                EditAPIKeySheet { newKey, newUser in
-                    onApiKeyUpdated(newKey, newUser)
-                }
             }
             .sheet(item: $showingDetailType) { type in
                 LevelDetailSheet(
@@ -612,72 +559,4 @@ struct HomeView: View {
         isLoadingSummary = false
     }
 
-}
-
-// MARK: - Edit API Key Sheet
-
-private struct EditAPIKeySheet: View {
-    var onSaved: (String, WKUserData) -> Void
-
-    @Environment(\.dismiss) private var dismiss
-    @State private var apiKey = ""
-    @State private var isValidating = false
-    @State private var errorMessage: String?
-
-    var body: some View {
-        NavigationStack {
-            Form {
-                Section {
-                    SecureField("Paste your WaniKani API key", text: $apiKey)
-                        .autocorrectionDisabled()
-                        .textInputAutocapitalization(.never)
-                } header: {
-                    Text("API Key")
-                } footer: {
-                    Text("You can find your API key in WaniKani Settings → API Tokens.")
-                }
-
-                if let error = errorMessage {
-                    Section {
-                        Text(error)
-                            .foregroundStyle(.red)
-                            .font(.callout)
-                    }
-                }
-            }
-            .navigationTitle("Edit API Key")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    if isValidating {
-                        ProgressView()
-                    } else {
-                        Button("Save") {
-                            Task { await validateAndSave() }
-                        }
-                        .disabled(apiKey.trimmingCharacters(in: .whitespaces).isEmpty)
-                    }
-                }
-            }
-        }
-    }
-
-    private func validateAndSave() async {
-        let trimmed = apiKey.trimmingCharacters(in: .whitespaces)
-        isValidating = true
-        errorMessage = nil
-
-        await WaniKaniAPIClient.shared.configure(apiKey: trimmed)
-        if let user = try? await WaniKaniAPIClient.shared.fetchUser() {
-            KeychainService.save(trimmed)
-            onSaved(trimmed, user)
-            dismiss()
-        } else {
-            errorMessage = "Invalid API key. Please check and try again."
-            isValidating = false
-        }
-    }
 }
