@@ -1,10 +1,17 @@
-# WaniKani Helper
+<p align="center">
+  <img src="docs/icon.png" width="128" alt="Fuyu app icon" />
+</p>
+
+<h1 align="center">Fuyu</h1>
+
+<p align="center">A faster way to get through your WaniKani reviews.</p>
+
 
 [WaniKani](https://www.wanikani.com) is a web-based Japanese kanji learning platform that uses spaced repetition (SRS) to teach radicals, kanji, and vocabulary.
 
 The further you progress the easier it is for reviews to pile up, and missing a day might mean you come back to hundreds waiting. WaniKani is strict about what it accepts — specific romanizations, exact meanings, and particular phrasing for vocabulary — so a typo or a close but wrong answer counts as incorrect and every mistake feels like a setback. It gets time consuming and starts to feel impossible to catch up on.
 
-WaniKani Helper is a free iOS app built to fix that. It swaps the type-in input for multiple choice so there are no typos and you can move through reviews much faster. The goal is just to make it feel manageable enough that you actually want to sit down and do them. It connects to WaniKani through their official API using your own API key, so your reviews and lessons always pull from your real account and results are submitted back as you go.
+Fuyu is a free iOS app built to fix that. It swaps the type-in input for multiple choice so there are no typos and you can move through reviews much faster. The goal is just to make it feel manageable enough that you actually want to sit down and do them. It connects to WaniKani through their official API using your own API key, so your reviews and lessons always pull from your real account and results are submitted back as you go.
 
 ---
 
@@ -218,7 +225,7 @@ The app started as a simple tool for one problem: getting through review backlog
 
 Example sentences work out of the box from the bundled database. To generate new ones, open **AI Model Setup** in Tools and either paste an [Anthropic API key](https://console.anthropic.com/settings/keys) for Claude, download Qwen (~2 GB), or select Apple Foundation Models on iOS 26+.
 
-To add the Lock Screen widget: long-press the Lock Screen → **Customize** → tap a widget slot → find **WaniKani Helper**. Open the app at least once first so it has words to show.
+To add the Lock Screen widget: long-press the Lock Screen → **Customize** → tap a widget slot → find **Fuyu** → **Vocab Word**. Open the app at least once first so it has words to show.
 
 ### Forking
 
