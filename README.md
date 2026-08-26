@@ -21,7 +21,7 @@ Fuyu is a free iOS app built to fix that. It swaps the type-in input for multipl
 
 Each item gets two cards, one for meaning and one for reading. They're mixed into the queue so you're not just answering meaning then reading back to back for every item. Each card gives you four choices. After answering you see the correct meaning and reading, any component radicals or kanji, example sentences for vocabulary, and the mnemonic. Results are submitted to WaniKani as you go.
 
-**Easy Mode** is an optional toggle on the home screen that drops the reading card entirely — kanji and vocabulary become meaning-only, the way radicals already are, and the reading is submitted as correct so your real SRS still advances on the meaning answer alone. It roughly halves the number of cards in a backlog.
+**Easy Mode** is an optional toggle in Settings that drops the reading card entirely — kanji and vocabulary become meaning-only, the way radicals already are, and the reading is submitted as correct so your real SRS still advances on the meaning answer alone. It roughly halves the number of cards in a backlog.
 
 ### Lesson session
 
@@ -47,7 +47,7 @@ A standalone hiragana and katakana practice mode with its own SRS, separate from
 
 ### Example sentences
 
-Vocabulary items can show a Japanese example sentence using the target word, with Apple's translation sheet a tap away. Four sources are supported, switchable in **AI Model Setup**:
+Vocabulary items can show a Japanese example sentence using the target word, with Apple's translation sheet a tap away. Four sources are supported, switchable under **Settings → AI Model**:
 
 | Source | Notes |
 |---|---|
@@ -73,6 +73,8 @@ A breakdown of your current level showing radicals, kanji, and vocabulary groupe
 ### Offline support
 
 All subjects are stored on your device so the app works even without a connection. On first launch they're loaded from a built-in database of ~9,000 WaniKani subjects. Your account data is refreshed in the background each time you open the app, and a banner lets you know if you lose connection mid-session.
+
+WaniKani periodically reshuffles which level a kanji or vocabulary word belongs to, and retires subjects outright. To keep up, the app pulls whatever has changed since its last sync — once a day, in the background, so it's normally a single small request. **Settings → Sync Subjects** forces it and shows when the last one landed.
 
 > **Planned.** Full offline review and lesson support is something we want to add. The idea is to let you complete reviews and lessons normally while offline, save the results locally, and automatically sync everything back to WaniKani once your connection is restored. That way being without internet is never a reason to skip a session.
 
@@ -114,6 +116,7 @@ What a nightly iCloud Backup does and doesn't capture:
 
 Two consequences worth knowing:
 
+- **Signing out clears this device only.** **Settings → Sign Out** removes the WaniKani token from the Keychain, forgets the cached account, and empties the widget's word pool. Your subjects and kana progress stay, and nothing on WaniKani changes. The Claude key is separate — remove it under **Settings → AI Model**.
 - **Your kana progress exists nowhere else.** WaniKani has no concept of it, so unlike your SRS stages it can't be re-fetched. iCloud Backup is the only thing protecting it.
 - **The Qwen model can vanish.** `Caches` is kept out of backups deliberately — a 2 GB model has no business in one — but iOS may also purge it under storage pressure, in which case it needs downloading again.
 
@@ -172,6 +175,7 @@ WaniKaniHelper/
 │   │   ├── LevelDetailSheet.swift    — level breakdown sheet
 │   │   ├── DailySentenceCard.swift   — AI sentence card on home screen
 │   │   ├── InlineExampleCard.swift   — AI sentence card in lessons and reviews
+│   │   ├── SettingsView.swift        — Easy Mode, AI model, API key, sync, sign out
 │   │   ├── AIModelSetupView.swift    — backend switching, Qwen download, Claude key
 │   │   ├── OfflineBanner.swift       — dismissable network warning banner
 │   │   └── SelectableLabel.swift     — UITextView wrapper for selectable Japanese text
@@ -221,9 +225,9 @@ The app started as a simple tool for one problem: getting through review backlog
 1. Open `WaniKaniHelper/WaniKaniHelper.xcodeproj` in Xcode 26+
 2. Build and run the **WaniKaniHelper** scheme on a device or simulator (iOS 26.4+). The widget extension is embedded in the app, so it installs alongside it — don't run the `WaniWidgetExtension` scheme directly.
 3. Enter your WaniKani API key — find it at [wanikani.com/settings/access_tokens](https://www.wanikani.com/settings/access_tokens)
-4. Subjects are seeded from the bundle on first launch; use **Sync Subjects** in the Tools section to pull in updates
+4. Subjects are seeded from the bundled database on first launch, then kept current by the daily background sync described above — no action needed
 
-Example sentences work out of the box from the bundled database. To generate new ones, open **AI Model Setup** in Tools and either paste an [Anthropic API key](https://console.anthropic.com/settings/keys) for Claude, download Qwen (~2 GB), or select Apple Foundation Models on iOS 26+.
+Example sentences work out of the box from the bundled database. To generate new ones, open **Settings → AI Model** and either paste an [Anthropic API key](https://console.anthropic.com/settings/keys) for Claude, download Qwen (~2 GB), or select Apple Foundation Models on iOS 26+.
 
 To add the Lock Screen widget: long-press the Lock Screen → **Customize** → tap a widget slot → find **Fuyu** → **Vocab Word**. Open the app at least once first so it has words to show.
 
