@@ -10,8 +10,42 @@ import Foundation
 final class SubjectStore {
     private let context: ModelContext
 
+    /// True while a subject sync is in flight, so the UI can show progress and avoid
+    /// firing a second one.
+    private(set) var isSyncing = false
+    /// Message from the last failed sync, cleared on the next success.
+    private(set) var syncError: String?
+
+    /// When `subjects_bundle.json` was generated. Seeding records this — not the install date —
+    /// as the sync baseline, so a fresh install still pulls everything WaniKani has changed
+    /// since the bundle was built (levels get reshuffled, subjects get retired).
+    /// Update this whenever the bundle is regenerated.
+    static let bundleVintage: Date = {
+        var components = DateComponents()
+        components.year = 2026
+        components.month = 5
+        components.day = 7
+        return Calendar(identifier: .gregorian).date(from: components) ?? .distantPast
+    }()
+
+    /// Subject content changes rarely, so once a day is plenty.
+    private static let syncInterval: TimeInterval = 60 * 60 * 24
+
     init(context: ModelContext) {
         self.context = context
+        migrateSyncBaseline()
+    }
+
+    /// Installs from before subject syncing existed recorded the *install* date as their sync
+    /// baseline, even though their data came from the bundle. Rewinding those to the bundle
+    /// vintage once makes the first real sync pull everything they missed.
+    private func migrateSyncBaseline() {
+        let flag = "subjectSyncBaselineFixed"
+        guard !UserDefaults.standard.bool(forKey: flag) else { return }
+        UserDefaults.standard.set(true, forKey: flag)
+        if let last = lastSyncDate, last > Self.bundleVintage {
+            recordSync(at: Self.bundleVintage)
+        }
     }
 
     private func save() {
@@ -278,8 +312,41 @@ final class SubjectStore {
         UserDefaults.standard.object(forKey: "subjectLastSync") as? Date
     }
 
-    func recordSync() {
-        UserDefaults.standard.set(Date(), forKey: "subjectLastSync")
+    func recordSync(at date: Date = Date()) {
+        UserDefaults.standard.set(date, forKey: "subjectLastSync")
+    }
+
+    /// True when no sync has happened yet, or the last one is older than `syncInterval`.
+    var needsSync: Bool {
+        guard let last = lastSyncDate else { return true }
+        return Date().timeIntervalSince(last) > Self.syncInterval
+    }
+
+    // MARK: - Subject sync
+
+    /// Pulls subjects changed since the last sync and upserts them, which is what keeps each
+    /// subject's `level` current — WaniKani moves kanji and vocabulary between levels, and
+    /// without this the bundled levels would be frozen at the vintage above forever.
+    /// Incremental by default, so on most days this is a single small page.
+    func syncSubjects(force: Bool = false) async {
+        guard !isSyncing else { return }
+        guard force || needsSync else { return }
+
+        isSyncing = true
+        defer { isSyncing = false }
+
+        do {
+            let updated = try await WaniKaniAPIClient.shared.fetchAllSubjects(updatedAfter: lastSyncDate)
+            if !updated.isEmpty {
+                upsert(fetchedSubjects: updated)
+            }
+            recordSync()
+            syncError = nil
+        } catch {
+            // Offline or rate-limited: keep the old baseline so the next attempt retries the
+            // same window rather than skipping changes.
+            syncError = error.localizedDescription
+        }
     }
 
     // MARK: - Bundle import / export
@@ -310,6 +377,6 @@ final class SubjectStore {
             ))
         }
         save()
-        recordSync()
+        recordSync(at: Self.bundleVintage)
     }
 }

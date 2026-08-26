@@ -38,14 +38,25 @@ struct RootView: View {
         Group {
             if let store {
                 if let user = currentUser, let kanaStore {
-                    HomeView(user: user, store: store, kanaStore: kanaStore) { key, updatedUser in
-                        KeychainService.save(key)
-                        if let data = try? JSONEncoder().encode(updatedUser) {
-                            UserDefaults.standard.set(data, forKey: "cachedUser")
+                    HomeView(
+                        user: user,
+                        store: store,
+                        kanaStore: kanaStore,
+                        onApiKeyUpdated: { key, updatedUser in
+                            KeychainService.save(key)
+                            if let data = try? JSONEncoder().encode(updatedUser) {
+                                UserDefaults.standard.set(data, forKey: "cachedUser")
+                            }
+                            apiKey = key
+                            currentUser = updatedUser
+                        },
+                        onSignOut: {
+                            // HomeView already cleared the Keychain and cached user; dropping this
+                            // state routes back to AuthView.
+                            apiKey = nil
+                            currentUser = nil
                         }
-                        apiKey = key
-                        currentUser = updatedUser
-                    }
+                    )
                 } else {
                     AuthView { key, user in
                         KeychainService.save(key)
@@ -93,6 +104,12 @@ struct RootView: View {
                     // Refresh the widget now that learned status is up to date.
                     WidgetWordSync.update(using: newStore)
                 }
+            }
+
+            // Pull subject changes (levels get reshuffled, subjects retired) at most once a day.
+            // Runs after pass status so the two don't contend for the rate limit.
+            Task {
+                await newStore.syncSubjects()
             }
         }
     }
