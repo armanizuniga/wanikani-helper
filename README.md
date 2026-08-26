@@ -88,6 +88,30 @@ Both the WaniKani token and the optional Anthropic key are stored in the Keychai
 
 ---
 
+## Data and backup
+
+Everything the app knows lives on your device. There's no account, no server, no analytics, and nothing is sent anywhere except WaniKani's API and — only if you supply a key — the Claude API.
+
+**There is no iCloud sync.** The app declares no iCloud entitlement and SwiftData runs with a local store, so installing on a second device starts it from scratch. Reviews and lessons stay in step across devices only because they're submitted to WaniKani; anything the app tracks itself does not.
+
+What a nightly iCloud Backup does and doesn't capture:
+
+| Data | Backed up |
+|---|---|
+| Subject database, kana SRS progress | Yes |
+| Claude-generated sentences | Yes |
+| Settings, cached user, daily goal | Yes |
+| WaniKani and Anthropic API keys | Yes — in the Keychain, encrypted, restorable to a new device |
+| Qwen2.5 model (~2 GB) | No — stored in Caches |
+| Bundled subject and sentence databases | No — they ship inside the app |
+
+Two consequences worth knowing:
+
+- **Your kana progress exists nowhere else.** WaniKani has no concept of it, so unlike your SRS stages it can't be re-fetched. iCloud Backup is the only thing protecting it.
+- **The Qwen model can vanish.** `Caches` is kept out of backups deliberately — a 2 GB model has no business in one — but iOS may also purge it under storage pressure, in which case it needs downloading again.
+
+---
+
 ## Project structure
 
 ```
@@ -114,7 +138,6 @@ WaniKaniHelper/
 │   │   ├── PromptLibrary.swift       — selects grammar prompts by user level
 │   │   ├── WidgetWordSync.swift      — writes the widget word pool to the App Group
 │   │   ├── SubjectBundler.swift      — BundledSubject Codable struct for bundle import
-│   │   ├── RadicalImageCache.swift   — disk cache and SVG renderer for radical images
 │   │   ├── KeychainService.swift     — API key storage
 │   │   ├── DailyGoal.swift           — daily review count, resets at midnight
 │   │   └── AI/
@@ -182,7 +205,7 @@ The app started as a simple tool for one problem: getting through review backlog
 
 **Lock Screen widget** — a widget extension that surfaces vocabulary you've passed on the Lock Screen, rotating through the day, sharing data with the app through an App Group.
 
-**Polish** — over time the API key was moved to secure storage, a daily goal ring was added to the home screen, offline warnings were added for when you lose connection mid-session, and radical images were cached so they don't need to be fetched every time.
+**Polish** — over time the API key was moved to secure storage, a daily goal ring was added to the home screen, and offline warnings were added for when you lose connection mid-session.
 
 ---
 
