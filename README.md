@@ -27,13 +27,13 @@ Fuyu is an iOS app built to fix that. It swaps the type-in input for multiple ch
 
 ### Review session
 
-This is the core of the app and where you'll spend most of your time — it's the mode that actually moves your WaniKani progress forward.
+This is the core of the app and where you'll spend most of your time. Reviews are how your WaniKani progress actually moves forward.
 
 Each item gets two cards, one for meaning and one for reading, because WaniKani only counts an item as correct when you get both right. Miss either and it slips back down its SRS stage, exactly as it would on the site. The two cards are mixed into the queue rather than shown back to back, so answering the reading isn't just recalling the card you saw a second ago.
 
 Each card gives you four choices. After answering you see the correct meaning and reading, any component radicals or kanji, example sentences for vocabulary, and the mnemonic. An item is sent to WaniKani as soon as both of its cards are answered, so leaving halfway through keeps everything you finished.
 
-**Easy Mode** is an optional toggle in Settings that drops the reading card entirely — kanji and vocabulary become meaning-only, the way radicals already are, and the reading is submitted as correct so your real SRS still advances on the meaning answer alone. It roughly halves the number of cards in a backlog.
+**Easy Mode** is an optional toggle in Settings that drops the reading card entirely. Kanji and vocabulary become meaning-only, the way radicals already are, and the reading is submitted as correct so your real SRS still advances on the meaning answer alone. It roughly halves the number of cards in a backlog.
 
 ### Lesson session
 
@@ -41,13 +41,13 @@ Steps through your pending lessons in the same order WaniKani uses: radicals fir
 
 ### Kanji Review (practice)
 
-A self-quiz over kanji you've already learned, grouped by SRS stage — Apprentice, Guru, Master, Enlightened, Burned. Pick any combination of categories and the app builds a session of up to 25 kanji from that pool, using the same multiple-choice cards as a real review.
+A self-quiz over kanji you've already learned, grouped by SRS stage: Apprentice, Guru, Master, Enlightened, Burned. Pick any combination of categories and the app builds a session of up to 25 kanji from that pool, using the same multiple-choice cards as a real review.
 
 Nothing here is sent to WaniKani. Results don't change your SRS stages, don't count toward your daily goal, and don't consume anything from your queue. It exists mainly for burned and enlightened items, which WaniKani won't show you again but which are exactly the ones that quietly fade.
 
 ### Lock Screen widget
 
-An accessory widget for the Lock Screen that cycles through vocabulary you've passed — the word, its reading, and its meaning — changing over the course of the day. Available in both the rectangular and inline families.
+An accessory widget for the Lock Screen that cycles through vocabulary you've passed, showing the word, its reading, and its meaning. It changes over the course of the day. Available in both the rectangular and inline families.
 
 The app writes a small word pool into a shared App Group container; the widget reads from that file, so it works with no network access and never touches the app's database. The pool is refreshed on launch and whenever pass status is synced from WaniKani. If you haven't passed any vocabulary yet, it falls back to early-level words.
 
@@ -85,7 +85,7 @@ A breakdown of your current level showing radicals, kanji, and vocabulary groupe
 
 All subjects are stored on your device so the app works even without a connection. On first launch they're loaded from a built-in database of ~9,000 WaniKani subjects. Your account data is refreshed in the background each time you open the app, and a banner lets you know if you lose connection mid-session.
 
-WaniKani periodically reshuffles which level a kanji or vocabulary word belongs to, and retires subjects outright. To keep up, the app pulls whatever has changed since its last sync — once a day, in the background, so it's normally a single small request. **Settings → Sync Subjects** forces it and shows when the last one landed.
+WaniKani periodically reshuffles which level a kanji or vocabulary word belongs to, and retires subjects outright. To keep up, the app pulls whatever has changed since its last sync. That runs once a day in the background, so it's normally a single small request. **Settings → Sync Subjects** forces it and shows when the last one landed.
 
 > **Planned.** Full offline review and lesson support is something we want to add. The idea is to let you complete reviews and lessons normally while offline, save the results locally, and automatically sync everything back to WaniKani once your connection is restored. That way being without internet is never a reason to skip a session.
 
@@ -98,8 +98,8 @@ WaniKani periodically reshuffles which level a kanji or vocabulary word belongs 
 | UI | SwiftUI |
 | Persistence | SwiftData |
 | Widget | WidgetKit + App Group shared container |
-| AI (cloud) | Claude API — `claude-haiku-4-5` |
-| AI (on-device) | MLXLLM — Qwen2.5-3B-Instruct-4bit |
+| AI (cloud) | Claude API (`claude-haiku-4-5`) |
+| AI (on-device) | MLXLLM (Qwen2.5-3B-Instruct-4bit) |
 | AI (system) | Apple FoundationModels (iOS 26+) |
 | API | WaniKani API v2 |
 | Auth | Keychain via Security framework |
@@ -110,7 +110,7 @@ Both the WaniKani token and the optional Anthropic key are stored in the Keychai
 
 ## Data and backup
 
-Everything the app knows lives on your device. There's no account, no server, no analytics, and nothing is sent anywhere except WaniKani's API and — only if you supply a key — the Claude API.
+Everything the app knows lives on your device. There's no account, no server, no analytics, and nothing is sent anywhere except WaniKani's API, and the Claude API if you supply a key.
 
 **There is no iCloud sync.** The app declares no iCloud entitlement and SwiftData runs with a local store, so installing on a second device starts it from scratch. Reviews and lessons stay in step across devices only because they're submitted to WaniKani; anything the app tracks itself does not.
 
@@ -121,15 +121,15 @@ What a nightly iCloud Backup does and doesn't capture:
 | Subject database, kana SRS progress | Yes |
 | Claude-generated sentences | Yes |
 | Settings, cached user, daily goal | Yes |
-| WaniKani and Anthropic API keys | Yes — in the Keychain, encrypted, restorable to a new device |
-| Qwen2.5 model (~2 GB) | No — stored in Caches |
-| Bundled subject and sentence databases | No — they ship inside the app |
+| WaniKani and Anthropic API keys | Yes, in the Keychain, encrypted and restorable to a new device |
+| Qwen2.5 model (~2 GB) | No, stored in Caches |
+| Bundled subject and sentence databases | No, they ship inside the app |
 
-Two consequences worth knowing:
+Three consequences worth knowing:
 
-- **Signing out clears this device only.** **Settings → Sign Out** removes the WaniKani token from the Keychain, forgets the cached account, and empties the widget's word pool. Your subjects and kana progress stay, and nothing on WaniKani changes. The Claude key is separate — remove it under **Settings → AI Model**.
+- **Signing out clears this device only.** **Settings → Sign Out** removes the WaniKani token from the Keychain, forgets the cached account, and empties the widget's word pool. Your subjects and kana progress stay, and nothing on WaniKani changes. The Claude key is separate, and you remove it under **Settings → AI Model**.
 - **Your kana progress exists nowhere else.** WaniKani has no concept of it, so unlike your SRS stages it can't be re-fetched. iCloud Backup is the only thing protecting it.
-- **The Qwen model can vanish.** `Caches` is kept out of backups deliberately — a 2 GB model has no business in one — but iOS may also purge it under storage pressure, in which case it needs downloading again.
+- **The Qwen model can vanish.** `Caches` is kept out of backups deliberately, since a 2 GB model has no business in one. iOS may also purge it under storage pressure, in which case it needs downloading again.
 
 ---
 
@@ -205,38 +205,38 @@ WaniKaniHelper/
 
 The app started as a simple tool for one problem: getting through review backlogs without the friction of typing.
 
-**Core review loop** — the first version pulled your available assignments from WaniKani and showed multiple choice cards for meaning and reading. It worked but was basic. Everything was fetched live on each session start and cards were shown one after another with no mixing.
+**Core review loop.** The first version pulled your available assignments from WaniKani and showed multiple choice cards for meaning and reading. It worked but was basic. Everything was fetched live on each session start and cards were shown one after another with no mixing.
 
-**Subjects stored on device** — fetching everything from the API on every launch was slow and hit rate limits fast. All ~9,000 WaniKani subjects were bundled into the app so they load instantly on first launch. After that the app only pulls down what has changed since the last sync.
+**Subjects stored on device.** Fetching everything from the API on every launch was slow and hit rate limits fast. All ~9,000 WaniKani subjects were bundled into the app so they load instantly on first launch. After that the app only pulls down what has changed since the last sync.
 
-**Mixed review queue** — the card order was reworked so meaning and reading cards for the same item are spread apart in the queue rather than shown back to back. This feels much closer to how WaniKani actually runs reviews.
+**Mixed review queue.** The card order was reworked so meaning and reading cards for the same item are spread apart in the queue rather than shown back to back. This feels much closer to how WaniKani actually runs reviews.
 
-**Example sentences** — vocabulary items gained example sentences to give words more context. These were initially pre-generated and bundled into the app, then expanded with on-device AI generation using Qwen2.5 so any vocabulary word could get a sentence, not just the ones covered by the bundle. Apple Foundation Models was added as an alternative for iOS 26+.
+**Example sentences.** Vocabulary items gained example sentences to give words more context. These were initially pre-generated and bundled into the app, then expanded with on-device AI generation using Qwen2.5 so any vocabulary word could get a sentence, not just the ones covered by the bundle. Apple Foundation Models was added as an alternative for iOS 26+.
 
-**Lesson mode** — a lesson view was built so you can step through new items before they hit your review queue, the same way WaniKani's lesson system works. Each item is started on WaniKani as you advance through it.
+**Lesson mode.** A lesson view was built so you can step through new items before they hit your review queue, the same way WaniKani's lesson system works. Each item is started on WaniKani as you advance through it.
 
-**Kana practice** — hiragana and katakana practice was added as a standalone mode with its own progress tracking, separate from WaniKani. Characters you struggle with come up more often until you've got them down.
+**Kana practice.** Hiragana and katakana practice was added as a standalone mode with its own progress tracking, separate from WaniKani. Characters you struggle with come up more often until you've got them down.
 
-**Kanji progress and level detail** — a kanji grid and level breakdown were added so you can see at a glance what you've passed and where you stand on your current level.
+**Kanji progress and level detail.** A kanji grid and level breakdown were added so you can see at a glance what you've passed and where you stand on your current level.
 
-**Better sentences** — neither local model produced reliably natural Japanese, so the approach changed: a larger model pre-generates sentences for vocabulary offline and they ship as a bundled database. On top of that, a Claude backend was added for anyone who wants to bring their own API key and generate on demand — and anything it generates is saved locally and folded back into the offline pool.
+**Better sentences.** Neither local model produced reliably natural Japanese, so the approach changed: a larger model pre-generates sentences for vocabulary offline and they ship as a bundled database. On top of that, a Claude backend was added for anyone who wants to bring their own API key and generate on demand. Anything it generates is saved locally and folded back into the offline pool.
 
-**Kanji Review** — a practice-only quiz mode that lets you drill kanji by SRS stage without touching your WaniKani data. Burned and enlightened items are the main reason it exists; WaniKani considers them finished and never shows them again.
+**Kanji Review.** A practice-only quiz mode that lets you drill kanji by SRS stage without touching your WaniKani data. Burned and enlightened items are the main reason it exists; WaniKani considers them finished and never shows them again.
 
-**Easy Mode** — an option to run reviews on meanings alone, for when the backlog is large enough that halving the card count is the difference between doing them and not.
+**Easy Mode.** An option to run reviews on meanings alone, for when the backlog is large enough that halving the card count is the difference between doing them and not.
 
-**Lock Screen widget** — a widget extension that surfaces vocabulary you've passed on the Lock Screen, rotating through the day, sharing data with the app through an App Group.
+**Lock Screen widget.** A widget extension that surfaces vocabulary you've passed on the Lock Screen, rotating through the day, sharing data with the app through an App Group.
 
-**Polish** — over time the API key was moved to secure storage, a daily goal ring was added to the home screen, and offline warnings were added for when you lose connection mid-session.
+**Polish.** Over time the API key was moved to secure storage, a daily goal ring was added to the home screen, and offline warnings were added for when you lose connection mid-session.
 
 ---
 
 ## Setup
 
 1. Open `WaniKaniHelper/WaniKaniHelper.xcodeproj` in Xcode 26+
-2. Build and run the **WaniKaniHelper** scheme on a device or simulator (iOS 26.4+). The widget extension is embedded in the app, so it installs alongside it — don't run the `WaniWidgetExtension` scheme directly.
-3. Enter your WaniKani API key — find it at [wanikani.com/settings/access_tokens](https://www.wanikani.com/settings/access_tokens)
-4. Subjects are seeded from the bundled database on first launch, then kept current by the daily background sync described above — no action needed
+2. Build and run the **WaniKaniHelper** scheme on a device or simulator (iOS 26.4+). The widget extension is embedded in the app, so it installs alongside it. Don't run the `WaniWidgetExtension` scheme directly.
+3. Enter your WaniKani API key, which you can find at [wanikani.com/settings/access_tokens](https://www.wanikani.com/settings/access_tokens)
+4. Subjects are seeded from the bundled database on first launch, then kept current by the daily background sync described above. No action needed
 
 Example sentences work out of the box from the bundled database. To generate new ones, open **Settings → AI Model** and either paste an [Anthropic API key](https://console.anthropic.com/settings/keys) for Claude, download Qwen (~2 GB), or select Apple Foundation Models on iOS 26+.
 
@@ -246,4 +246,4 @@ To add the Lock Screen widget: long-press the Lock Screen → **Customize** → 
 
 Change the signing team and bundle identifiers to your own in Signing & Capabilities, for every target. The widget's identifier has to stay a child of the app's, e.g. `com.you.WaniKaniHelper` and `com.you.WaniKaniHelper.WaniWidget`.
 
-Then enable **App Groups** on both the app and widget targets and add `group.<your app bundle id>` — matching the app identifier exactly. That naming is what lets the widget find the container without any code change.
+Then enable **App Groups** on both the app and widget targets and add `group.<your app bundle id>`, matching the app identifier exactly. That naming is what lets the widget find the container without any code change.
