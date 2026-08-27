@@ -27,7 +27,11 @@ Fuyu is an iOS app built to fix that. It swaps the type-in input for multiple ch
 
 ### Review session
 
-Each item gets two cards, one for meaning and one for reading. They're mixed into the queue so you're not just answering meaning then reading back to back for every item. Each card gives you four choices. After answering you see the correct meaning and reading, any component radicals or kanji, example sentences for vocabulary, and the mnemonic. Results are submitted to WaniKani as you go.
+This is the core of the app and where you'll spend most of your time — it's the mode that actually moves your WaniKani progress forward.
+
+Each item gets two cards, one for meaning and one for reading, because WaniKani only counts an item as correct when you get both right. Miss either and it slips back down its SRS stage, exactly as it would on the site. The two cards are mixed into the queue rather than shown back to back, so answering the reading isn't just recalling the card you saw a second ago.
+
+Each card gives you four choices. After answering you see the correct meaning and reading, any component radicals or kanji, example sentences for vocabulary, and the mnemonic. An item is sent to WaniKani as soon as both of its cards are answered, so leaving halfway through keeps everything you finished.
 
 **Easy Mode** is an optional toggle in Settings that drops the reading card entirely — kanji and vocabulary become meaning-only, the way radicals already are, and the reading is submitted as correct so your real SRS still advances on the meaning answer alone. It roughly halves the number of cards in a backlog.
 
@@ -134,7 +138,7 @@ Two consequences worth knowing:
 ```
 WaniKaniHelper/
 ├── WaniKaniHelper/
-│   ├── WaniKaniHelperApp.swift       — app entry, auth routing, bootstrap, widget sync
+│   ├── WaniKaniHelperApp.swift       — app entry, auth routing, bootstrap, subject and widget sync
 │   ├── Models/
 │   │   ├── Subject.swift             — CachedSubject SwiftData model
 │   │   ├── ReviewItem.swift          — ReviewItem struct, QuestionType enum
@@ -170,8 +174,8 @@ WaniKaniHelper/
 │   │   ├── SubjectStore.swift        — SwiftData context for WaniKani subjects
 │   │   └── KanaSRSStore.swift        — SwiftData context for kana SRS entries
 │   ├── Views/
-│   │   ├── AuthView.swift            — API key entry and validation
-│   │   ├── HomeView.swift            — dashboard: goal ring, tiles, Easy Mode, tools
+│   │   ├── AuthView.swift            — API key entry and validation, first launch and changes
+│   │   ├── HomeView.swift            — dashboard: goal ring, tiles, level progress
 │   │   ├── ReviewCardView.swift      — shared quiz card used by both review modes
 │   │   ├── ReviewSessionView.swift   — WaniKani review session
 │   │   ├── LessonSessionView.swift   — lesson card UI
