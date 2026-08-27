@@ -166,7 +166,7 @@ struct SettingsView: View {
                     Text("Sign Out")
                         .font(.system(size: 16, weight: .medium, design: .rounded))
                         .foregroundStyle(.red)
-                    Text(user.username)
+                    Text(user.displayName)
                         .font(.system(size: 12))
                         .foregroundStyle(.secondary)
                 }

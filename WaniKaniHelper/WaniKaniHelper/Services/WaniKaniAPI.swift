@@ -182,6 +182,22 @@ struct WKUserData: Codable {
 }
 
 extension WKUserData {
+    /// The name to show in the UI. Normally the real WaniKani username; in debug builds it can be
+    /// overridden with a launch argument so screenshots don't expose a real account:
+    ///
+    ///     xcrun simctl launch booted ArmaniZuniga.WaniKaniHelper -screenshotName crabigator
+    ///
+    /// or tick the same argument in the scheme's Run → Arguments. Release builds always use the
+    /// real username — the override isn't compiled in.
+    var displayName: String {
+        #if DEBUG
+        if let override = UserDefaults.standard.string(forKey: "screenshotName"), !override.isEmpty {
+            return override
+        }
+        #endif
+        return username
+    }
+
     // The last-known WaniKani level, cached at the app root under "cachedUser".
     // Lets services that don't receive the user object (e.g. inline examples) read the level.
     // Returns 0 when unknown.

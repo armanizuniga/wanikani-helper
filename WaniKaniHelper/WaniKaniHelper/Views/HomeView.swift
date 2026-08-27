@@ -63,7 +63,7 @@ struct HomeView: View {
                                 .font(.system(size: 14, weight: .semibold))
                                 .foregroundStyle(.secondary)
                                 .kerning(1.5)
-                            Text(user.username)
+                            Text(user.displayName)
                                 .font(.title2.bold())
                         }
                         Spacer()
@@ -356,15 +356,22 @@ struct HomeView: View {
     private var levelProgressRow: some View {
         let lp = levelProgress
         let kanjiTotal = lp?.kanjiTotal ?? 0
+        // WaniKani levels you up once 90% of the level's kanji have reached Guru, so progress is
+        // a count of passed kanji against that threshold. Partial credit for stages below Guru
+        // would let the bar read 100% while too few kanji had actually passed.
         let requiredKanji = Int(ceil(Double(kanjiTotal) * 0.9))
-        let totalTicks = requiredKanji * 5
 
         let kanjiAssignments = levelAssignments.filter {
             !$0.data.hidden && $0.data.subjectTypeEnum == .kanji
         }
-        let completedTicks = kanjiAssignments.reduce(0) { $0 + min($1.data.srsStage, 5) }
-        let kanjiProgress: CGFloat = totalTicks > 0 ? min(1.0, CGFloat(completedTicks) / CGFloat(totalTicks)) : 0
-        let kanjiPct = Int(kanjiProgress * 100)
+        let passedKanji = kanjiAssignments.filter { $0.data.passedAt != nil }.count
+        let kanjiProgress: CGFloat = requiredKanji > 0 ? min(1.0, CGFloat(passedKanji) / CGFloat(requiredKanji)) : 0
+        let remainingKanji = max(0, requiredKanji - passedKanji)
+        let levelUpLabel: String = {
+            guard requiredKanji > 0 else { return "" }
+            guard remainingKanji > 0 else { return "Ready to level up!" }
+            return "Guru \(remainingKanji) more kanji to level up"
+        }()
 
         return VStack(alignment: .leading, spacing: 12) {
             // Kanji level-up bar
@@ -373,9 +380,11 @@ struct HomeView: View {
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundStyle(.secondary)
                 Spacer()
-                Text("\(kanjiPct)%")
+                Text(levelUpLabel)
                     .font(.system(size: 13, weight: .semibold))
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(remainingKanji == 0 && requiredKanji > 0 ? Color("WKGreen") : Color.secondary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.85)
             }
             .padding(.horizontal, 16)
 
