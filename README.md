@@ -17,7 +17,7 @@
 
 [WaniKani](https://www.wanikani.com) is a web-based Japanese kanji learning platform that uses spaced repetition (SRS) to teach radicals, kanji, and vocabulary.
 
-The further you progress the easier it is for reviews to pile up, and missing a day might mean you come back to hundreds of reviews waiting. WaniKani is also strict about what it accepts for answers; exact meanings, particular phrasing for vocabulary, a typo or a close but wrong answer counts as incorrect and every mistake keeps you from progressing. It becomes time consuming and starts to feel impossible to catch up.
+The further you progress the easier it is for reviews to pile up, and missing a day might mean you come back to hundreds of reviews waiting. The WaniKani website and mobile web uses keyboard input only and is also strict about what it accepts for answers; exact meanings, particular phrasing for vocabulary, a typo or a close but wrong answer counts as incorrect and every mistake keeps you from progressing. It becomes time consuming and starts to feel impossible to catch up.
 
 Fuyu is an iOS app built to fix that. It swaps the type-in input for multiple choice so there are no typos and you can move through reviews much faster. The goal is  to make it feel more manageable enough that you actually want to sit down and do them. It connects to WaniKani through their official API using your own API key, so your reviews and lessons always pull from your real account and results are submitted back as you go.
 
