@@ -8,9 +8,9 @@
 
 <p align="center">
   <img src="docs/screenshots/home.png" width="215" alt="Home dashboard" />
-  &nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
   <img src="docs/screenshots/review.png" width="215" alt="Review session" />
-  &nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
   <img src="docs/screenshots/kanji-progress.png" width="215" alt="Kanji progress grid" />
 </p>
 
