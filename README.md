@@ -6,6 +6,12 @@
 
 <p align="center">A faster way to get through your WaniKani reviews.</p>
 
+<p align="center">
+  <img src="docs/screenshots/home.png" width="250" alt="Home dashboard" />
+  <img src="docs/screenshots/review.png" width="250" alt="Review session" />
+  <img src="docs/screenshots/kanji-progress.png" width="250" alt="Kanji progress grid" />
+</p>
+
 
 [WaniKani](https://www.wanikani.com) is a web-based Japanese kanji learning platform that uses spaced repetition (SRS) to teach radicals, kanji, and vocabulary.
 
