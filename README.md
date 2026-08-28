@@ -59,7 +59,7 @@ Generated sentences are built from one of 135 grammar prompts spanning N5 to N1,
 
 > **Note on the local models.** Apple Foundation Models triggers safety guardrails on a large number of vocabulary words, blocking generation entirely. Qwen2.5 produces consistent sentences, but they're often not grammatically correct or natural sounding, and hallucinates to korean for some reason. The pre-generated database was built from larger models running off-device to route around both, and is the recommended default. Sentences through level 17 come from Claude Opus; the rest were produced with gemma3 through [wanikani-sentence-generator](https://github.com/armanizuniga/wanikani-sentence-generator), filtered so the target word actually appears in the sentence.
 
-### Kanji Review (practice)
+### Kanji Review
 
 Kanji Review is practice, and only practice. It's a self-quiz you can run whenever you want over kanji you've already learned, using the same multiple-choice cards as a real review but without touching your WaniKani account.
 
