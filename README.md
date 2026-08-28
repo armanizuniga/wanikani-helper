@@ -73,6 +73,14 @@ An accessory widget for the Lock Screen that cycles through vocabulary you've pa
 
 The app writes a small word pool into a shared App Group container; the widget reads from that file, so it works with no network access and never touches the app's database. The pool is refreshed on launch and whenever pass status is synced from WaniKani. If you haven't passed any vocabulary yet, it falls back to early-level words.
 
+### Name Practice
+
+Japanese names use readings that often aren't the ones WaniKani teaches. 中 is なか in 田中 rather than ちゅう, and some names use nanori readings that appear nowhere else in the language. WaniKani never covers this, so names stay hard to read long after the kanji themselves are easy.
+
+Practice runs over the 100 most common surnames, a set of common given names, or full names built by pairing the two, which is how you'd actually meet them. Answer, and the reveal shows the reading in hiragana and romaji, a per-kanji breakdown of how the reading maps on, and what you already know each kanji as from WaniKani, so the contrast is visible.
+
+Readings come from [JMnedict](https://www.edrdg.org/enamdict/enamdict_doc.html) cross-checked against published frequency rankings. Nothing is composed at runtime: name readings are irregular enough that a generated name couldn't be quizzed honestly, since 愛 alone has 52 attested readings. Like Kanji Review, nothing here touches your WaniKani account.
+
 ### Kana practice
 
 A standalone hiragana and katakana practice mode with its own SRS, separate from WaniKani. Each character has a mastery level that goes up as you get it right and drops when you get it wrong. Characters you struggle with show up more often until you've got them down.
@@ -147,7 +155,8 @@ WaniKaniHelper/
 │   │   ├── Subject.swift             — CachedSubject SwiftData model
 │   │   ├── ReviewItem.swift          — ReviewItem struct, QuestionType enum
 │   │   ├── KanaSRSEntry.swift        — KanaSRSEntry SwiftData model
-│   │   └── KanjiCategory.swift       — SRS-stage groupings for Kanji Review
+│   │   ├── KanjiCategory.swift       — SRS-stage groupings for Kanji Review
+│   │   └── JapaneseName.swift        — name entry, reading, and per-kanji segments
 │   ├── Services/
 │   │   ├── WaniKaniAPI.swift         — API client, all endpoints, response types
 │   │   ├── ReviewService.swift       — review session state, Easy Mode, submission
@@ -155,6 +164,8 @@ WaniKaniHelper/
 │   │   ├── KanjiReviewService.swift  — local-only kanji practice, never submits
 │   │   ├── KanaReviewService.swift   — kana session state and grading
 │   │   ├── KanaData.swift            — static hiragana/katakana tables
+│   │   ├── NameStore.swift           — loads the bundled name list
+│   │   ├── NamePracticeService.swift — name quiz state and distractors
 │   │   ├── BundledSentenceStore.swift — pre-generated sentence database
 │   │   ├── SavedSentenceStore.swift  — writable overlay for newly generated sentences
 │   │   ├── SentenceStore.swift       — loads sentences.json for static examples
@@ -185,6 +196,8 @@ WaniKaniHelper/
 │   │   ├── LessonSessionView.swift   — lesson card UI
 │   │   ├── KanjiReviewSetupView.swift   — category picker for kanji practice
 │   │   ├── KanjiReviewSessionView.swift — kanji practice session
+│   │   ├── NamePracticeSetupView.swift   — name practice mode picker
+│   │   ├── NamePracticeSessionView.swift — name quiz and reveal
 │   │   ├── KanaReviewView.swift      — kana practice UI
 │   │   ├── KanjiProgressView.swift   — full kanji grid by level
 │   │   ├── LevelDetailSheet.swift    — level breakdown sheet
@@ -197,6 +210,7 @@ WaniKaniHelper/
 │   ├── Prompts/                      — 135 grammar prompt .txt files (N5–N1)
 │   ├── sentences.json                — static example sentences
 │   ├── wanikani_vocab_sentences.json — pre-generated vocabulary sentences
+│   ├── japanese_names.json           — surnames and given names with readings
 │   └── subjects_bundle.json          — ~9,000 bundled subjects for offline seed
 └── WaniWidget/
     ├── WaniWidgetBundle.swift        — widget extension entry point
@@ -251,3 +265,11 @@ To add the Lock Screen widget: long-press the Lock Screen → **Customize** → 
 Change the signing team and bundle identifiers to your own in Signing & Capabilities, for every target. The widget's identifier has to stay a child of the app's, e.g. `com.you.WaniKaniHelper` and `com.you.WaniKaniHelper.WaniWidget`.
 
 Then enable **App Groups** on both the app and widget targets and add `group.<your app bundle id>`, matching the app identifier exactly. That naming is what lets the widget find the container without any code change.
+
+---
+
+## Credits
+
+Name readings and per-kanji breakdowns are derived from [JMnedict](https://www.edrdg.org/enamdict/enamdict_doc.html) and [KANJIDIC2](https://www.edrdg.org/wiki/index.php/KANJIDIC_Project), both from the [Electronic Dictionary Research and Development Group](https://www.edrdg.org/) and used under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/). Surname frequency ordering comes from published census-based rankings.
+
+WaniKani subject content is fetched from the [WaniKani API](https://docs.api.wanikani.com/) using your own token. WaniKani is a trademark of Tofugu LLC; this app is not affiliated with or endorsed by them.

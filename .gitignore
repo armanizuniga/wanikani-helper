@@ -20,3 +20,13 @@ DerivedData/
 Pods/
 claude-code-session.md
 .idea/
+
+# Name pipeline: large source dictionaries and regenerable intermediates
+tools/names/*.xml
+tools/names/*.xml.gz
+tools/names/jmnedict_index.json
+tools/names/kanji_readings.json
+tools/names/surnames.json
+tools/names/given.json
+tools/names/japanese_names.json
+__pycache__/

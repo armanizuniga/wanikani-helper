@@ -29,6 +29,7 @@ struct HomeView: View {
     @State private var levelAssignments: [WKResource<WKAssignmentData>] = []
     @State private var showingDetailType: SubjectDetailType?
     @State private var showKanjiProgress = false
+    @State private var showNamePractice = false
     @State private var offlineWarning: String?
 
     var reviewCount: Int {
@@ -214,6 +215,14 @@ struct HomeView: View {
                     .listSectionSpacing(10)
                 }
 
+                Section {
+                    namePracticeRow
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 8, trailing: 0))
+                }
+                .listSectionSpacing(10)
+
                 Section("Tools") {
                     Button {
                         showKanjiProgress = true
@@ -282,6 +291,9 @@ struct HomeView: View {
             }
             .navigationDestination(item: $kanaScript) { script in
                 KanaReviewView(store: kanaStore, script: script.rawValue)
+            }
+            .navigationDestination(isPresented: $showNamePractice) {
+                NamePracticeSetupView(store: store)
             }
             .navigationDestination(isPresented: $showKanjiProgress) {
                 KanjiProgressView(store: store)
@@ -462,6 +474,36 @@ struct HomeView: View {
             Text("Next in").font(.caption)
             Text("0h 0m").font(.caption.bold())
         }
+    }
+
+    // MARK: - Name Practice
+
+    @ViewBuilder
+    private var namePracticeRow: some View {
+        Button {
+            showNamePractice = true
+        } label: {
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Name Practice")
+                        .font(.system(size: 17, weight: .bold, design: .rounded))
+                        .foregroundStyle(Color("WKPlum"))
+                    Text("Read Japanese surnames and given names")
+                        .font(.system(size: 13))
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+                Image(systemName: "person.text.rectangle.fill")
+                    .font(.system(size: 20))
+                    .foregroundStyle(Color("WKPlum"))
+            }
+            .padding(.vertical, 16)
+            .padding(.horizontal, 16)
+            .background(Color("WKPlum").opacity(0.12))
+            .clipShape(RoundedRectangle(cornerRadius: 14))
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
     }
 
     // MARK: - Kana Practice
