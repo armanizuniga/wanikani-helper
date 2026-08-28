@@ -39,7 +39,9 @@ Each card gives you four choices. After answering you see the correct meaning an
 
 A lesson is where you learn an item for the first time. Rather than being quizzed, you're shown the radical, kanji, or vocabulary word along with its meaning, its reading, how it breaks down into components, and example sentences for vocabulary. Once you move past it, the item is added to your reviews and starts coming back on the SRS schedule.
 
-Items come in the order WaniKani introduces them: lowest level first, and within a level, radicals before kanji before vocabulary. That order matters, because radicals build the kanji and kanji build the vocabulary, so you meet the pieces before the things made out of them. Each item is started on WaniKani as you pass it, so stopping early leaves the rest untouched.
+Items come in the order WaniKani introduces them: lowest level first, and within a level, radicals before kanji before vocabulary. That order matters, because radicals build the kanji and kanji build the vocabulary, so you meet the pieces before the things made out of them.
+
+Each item is sent to WaniKani the moment you tap Next, so you don't have to get through everything in one sitting. Whatever you didn't reach is still waiting as a lesson the next time you come back.
 
 ### Kanji Review (practice)
 
