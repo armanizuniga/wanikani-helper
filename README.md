@@ -45,9 +45,11 @@ Each item is sent to WaniKani the moment you tap Next, so you don't have to get 
 
 ### Kanji Review (practice)
 
-A self-quiz over kanji you've already learned, grouped by SRS stage: Apprentice, Guru, Master, Enlightened, Burned. Pick any combination of categories and the app builds a session of up to 25 kanji from that pool, using the same multiple-choice cards as a real review.
+Kanji Review is practice, and only practice. It's a self-quiz you can run whenever you want over kanji you've already learned, using the same multiple-choice cards as a real review but without touching your WaniKani account.
 
-Nothing here is sent to WaniKani. Results don't change your SRS stages, don't count toward your daily goal, and don't consume anything from your queue. It exists mainly for burned and enlightened items, which WaniKani won't show you again but which are exactly the ones that quietly fade.
+Your kanji are grouped by SRS stage: Apprentice, Guru, Master, Enlightened, and Burned. The setup screen lists how many you have sitting in each stage, which is a useful picture on its own of where your kanji actually stand. Pick any combination of stages and the app builds a session of up to 25 kanji from that pool.
+
+Nothing here is sent to WaniKani. Answers don't change your SRS stages, don't count toward your daily goal, and don't consume anything from your review queue. It exists mainly for burned and enlightened kanji, which WaniKani treats as finished and won't show you again, but which are exactly the ones that quietly fade.
 
 ### Lock Screen widget
 
