@@ -164,19 +164,21 @@ struct NamePracticeSessionView: View {
                 }
             }
 
-            // Where a kanji in the name is also a WaniKani subject, show what you already
-            // know it as — usually a different reading, which is the point of the feature.
-            let known = store.kanjiInSentence(q.kanji).filter { $0.isPassed }
-            if !known.isEmpty {
+            // Every kanji in the name that WaniKani teaches, whether or not you've passed it.
+            // The point is the contrast: seeing the reading you know next to the one the name
+            // uses, which for 中 is ちゅう versus なか.
+            let inName = store.kanjiInSentence(q.kanji)
+            if !inName.isEmpty {
                 Divider()
-                Text("YOU'VE LEARNED")
+                Text("KANJI IN THIS NAME")
                     .font(.system(size: 11, weight: .bold, design: .rounded))
                     .foregroundStyle(.secondary)
                     .kerning(1.0)
-                ForEach(known, id: \.id) { subject in
-                    HStack(spacing: 8) {
+                ForEach(inName, id: \.id) { subject in
+                    HStack(spacing: 10) {
                         Text(subject.characters ?? "")
-                            .font(.system(size: 20))
+                            .font(.system(size: 22))
+                            .frame(width: 30)
                         VStack(alignment: .leading, spacing: 1) {
                             Text(subject.meanings.first ?? "")
                                 .font(.system(size: 14, weight: .medium))
@@ -187,6 +189,15 @@ struct NamePracticeSessionView: View {
                             }
                         }
                         Spacer()
+                        if subject.isPassed {
+                            Image(systemName: "checkmark.circle.fill")
+                                .font(.system(size: 13))
+                                .foregroundStyle(Color("WKGreen"))
+                        } else {
+                            Text("Lv \(subject.level)")
+                                .font(.system(size: 11, weight: .semibold, design: .rounded))
+                                .foregroundStyle(.secondary)
+                        }
                     }
                 }
             }

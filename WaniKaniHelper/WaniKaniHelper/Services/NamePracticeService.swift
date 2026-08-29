@@ -62,25 +62,28 @@ final class NamePracticeService {
 
     // MARK: - Session
 
+    /// Builds a session by drawing without replacement, so no name is asked twice.
+    /// Picking randomly per question repeats often at these pool sizes: 20 draws from
+    /// 100 surnames collides more than 85% of the time by the birthday paradox.
     func start(mode: NameMode) {
-        queue = (0..<Self.sessionLength).compactMap { _ in question(for: mode) }
-        currentIndex = 0
-        sessionComplete = false
-    }
-
-    private func question(for mode: NameMode) -> NameQuestion? {
         switch mode {
         case .surname:
-            guard let n = store.surnames.randomElement() else { return nil }
-            return single(n, pool: store.surnames)
+            queue = store.surnames.shuffled()
+                .prefix(Self.sessionLength)
+                .map { single($0, pool: store.surnames) }
         case .given:
-            guard let n = store.givenNames.randomElement() else { return nil }
-            return single(n, pool: store.givenNames)
+            queue = store.givenNames.shuffled()
+                .prefix(Self.sessionLength)
+                .map { single($0, pool: store.givenNames) }
         case .full:
-            guard let s = store.surnames.randomElement(),
-                  let g = store.givenNames.randomElement() else { return nil }
-            return full(surname: s, given: g)
+            // Zipping two independent shuffles keeps every pair distinct and, as a bonus,
+            // never repeats a surname or a given name within the session either.
+            queue = zip(store.surnames.shuffled(), store.givenNames.shuffled())
+                .prefix(Self.sessionLength)
+                .map { full(surname: $0.0, given: $0.1) }
         }
+        currentIndex = 0
+        sessionComplete = false
     }
 
     private func single(_ name: JapaneseName, pool: [JapaneseName]) -> NameQuestion {
