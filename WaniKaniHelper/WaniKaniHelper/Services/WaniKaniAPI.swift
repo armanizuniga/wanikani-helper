@@ -277,6 +277,8 @@ struct LevelProgress {
 
 enum SRSStage {
     static let passed = 5
+    static let master = 7
+    static let enlightened = 8
     static let burned = 9
 }
 
@@ -438,10 +440,11 @@ actor WaniKaniAPIClient {
         let radicals = visible.filter { $0.data.subjectTypeEnum == .radical }
         let kanji    = visible.filter { $0.data.subjectTypeEnum == .kanji }
         let vocab    = visible.filter { $0.data.subjectTypeEnum?.isVocab == true }
+        // Same `passed_at` rule as `fetchSubjectStatus` — see the note there.
         return (
-            radicals.filter { $0.data.srsStage >= SRSStage.passed }.count,
-            kanji.filter    { $0.data.srsStage >= SRSStage.passed }.count,
-            vocab.filter    { $0.data.srsStage >= SRSStage.passed }.count
+            radicals.filter { $0.data.passedAt != nil }.count,
+            kanji.filter    { $0.data.passedAt != nil }.count,
+            vocab.filter    { $0.data.passedAt != nil }.count
         )
     }
 
@@ -501,18 +504,32 @@ actor WaniKaniAPIClient {
         return all
     }
 
-    func fetchPassedSubjectIds() async throws -> Set<Int> {
-        var all: Set<Int> = []
-        var nextURL: URL? = URL(string: baseURL + "/assignments?passed=true&per_page=1000")
+    /// Every started assignment, reduced to the two status sets the app persists on CachedSubject.
+    /// `started=true` is a superset of `passed=true`, so one paginated pass covers both and the
+    /// burned set costs no extra requests against the rate limit.
+    func fetchSubjectStatus() async throws -> (passed: Set<Int>, burned: Set<Int>) {
+        var passed: Set<Int> = []
+        var burned: Set<Int> = []
+        var nextURL: URL? = URL(string: baseURL + "/assignments?started=true&per_page=1000")
         while let url = nextURL {
             let page: WKCollection<WKResource<WKAssignmentData>> = try await requestURL(url)
-            for resource in page.data {
-                all.insert(resource.data.subjectId)
+            for resource in page.data where !resource.data.hidden {
+                // `passed_at`, not the current SRS stage: WaniKani sets it the first time an item
+                // reaches Guru and never clears it, so an item that later failed a review and fell
+                // back to Apprentice stays passed. Testing `srs_stage >= 5` instead would un-mark
+                // those, greying out kanji on levels the user has long since completed.
+                if resource.data.passedAt != nil {
+                    passed.insert(resource.data.subjectId)
+                }
+                // `burned_at` is cleared on resurrection, so this tracks currently-burned items.
+                if resource.data.burnedAt != nil {
+                    burned.insert(resource.data.subjectId)
+                }
             }
             nextURL = page.pages.nextUrl.flatMap { URL(string: $0) }
             if nextURL != nil { try await Task.sleep(nanoseconds: 1_100_000_000) }
         }
-        return all
+        return (passed, burned)
     }
 
     @discardableResult

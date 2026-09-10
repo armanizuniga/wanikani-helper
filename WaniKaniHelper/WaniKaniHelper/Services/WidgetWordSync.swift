@@ -1,6 +1,6 @@
 // App-side glue between the SwiftData subject cache and the Lock Screen widget.
-// Picks the user's learned (passed) vocabulary, writes a small pool into the shared
-// App Group container, and asks WidgetKit to refresh the timeline.
+// Picks the user's burned vocabulary (falling back to merely learned words), writes a small pool
+// into the shared App Group container, and asks WidgetKit to refresh the timeline.
 import Foundation
 import WidgetKit
 
@@ -24,10 +24,17 @@ extension WidgetWord {
 @MainActor
 enum WidgetWordSync {
     /// Refreshes the shared word pool and reloads the widget. Cheap; safe to call on launch
-    /// and whenever pass state changes. Falls back to early-level vocab so a brand-new user
-    /// (no passes yet) still sees words instead of an empty widget.
+    /// and whenever pass/burn state changes.
+    ///
+    /// Burned vocabulary comes first: those words are gone from WaniKani reviews forever, so the
+    /// Lock Screen is the only place they'll be seen again. Passed vocabulary and then early-level
+    /// vocabulary back it up, so a user with no burns yet — or a fresh install — still sees words
+    /// instead of an empty widget.
     static func update(using store: SubjectStore) {
-        var words = store.passedVocabularyWords()
+        var words = store.burnedVocabularyWords()
+        if words.isEmpty {
+            words = store.passedVocabularyWords()
+        }
         if words.isEmpty {
             words = store.fallbackVocabularyWords()
         }

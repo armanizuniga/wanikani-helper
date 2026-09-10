@@ -68,7 +68,8 @@ struct KanjiReviewSessionView: View {
                 item: item,
                 store: store,
                 onSelect: { service.selectChoice($0) },
-                onConfirm: { service.confirmAndAdvance() }
+                onConfirm: { service.confirmAndAdvance() },
+                alwaysGateChoices: true
             )
         }
     }

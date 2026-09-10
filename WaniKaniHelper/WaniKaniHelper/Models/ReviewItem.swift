@@ -16,6 +16,10 @@ struct ReviewItem: Identifiable {
     let subject: CachedSubject
     let questionType: QuestionType
 
+    // WaniKani SRS stage of the assignment this card came from. 0 for practice sessions that
+    // don't run on WaniKani assignments, which is below every stage the UI reacts to.
+    var srsStage: Int = 0
+
     var choices: [String] = []
     var correctChoice: String = ""
     var selectedChoice: String? = nil

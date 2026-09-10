@@ -1,6 +1,7 @@
-// App entry point. Configures the SwiftData model container for CachedSubject and KanaSRSEntry,
-// bootstraps the SubjectStore and KanaSRSStore, and routes between AuthView (first launch)
-// and HomeView (authenticated) based on whether a valid API key is stored.
+// App entry point. Configures the SwiftData model container for CachedSubject, KanaSRSEntry and
+// BurnedKanjiSRSEntry, bootstraps the SubjectStore, KanaSRSStore and BurnedKanjiSRSStore, and routes
+// between AuthView (first launch) and HomeView (authenticated) based on whether a valid API key is
+// stored.
 import SwiftUI
 import SwiftData
 
@@ -10,7 +11,7 @@ struct WaniKaniHelperApp: App {
         WindowGroup {
             RootView()
         }
-        .modelContainer(for: [CachedSubject.self, KanaSRSEntry.self])
+        .modelContainer(for: [CachedSubject.self, KanaSRSEntry.self, BurnedKanjiSRSEntry.self])
     }
 }
 
@@ -18,6 +19,7 @@ struct RootView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var store: SubjectStore?
     @State private var kanaStore: KanaSRSStore?
+    @State private var burnedStore: BurnedKanjiSRSStore?
     @State private var apiKey: String? = {
         // Migrate from UserDefaults to Keychain on first run after update
         if let legacy = UserDefaults.standard.string(forKey: "apiKey") {
@@ -37,11 +39,12 @@ struct RootView: View {
     var body: some View {
         Group {
             if let store {
-                if let user = currentUser, let kanaStore {
+                if let user = currentUser, let kanaStore, let burnedStore {
                     HomeView(
                         user: user,
                         store: store,
                         kanaStore: kanaStore,
+                        burnedStore: burnedStore,
                         onApiKeyUpdated: { key, updatedUser in
                             KeychainService.save(key)
                             if let data = try? JSONEncoder().encode(updatedUser) {
@@ -76,6 +79,7 @@ struct RootView: View {
             newStore.importFromBundle()
             store = newStore
             kanaStore = KanaSRSStore(context: modelContext)
+            burnedStore = BurnedKanjiSRSStore(context: modelContext)
 
             // Seed the Lock Screen widget from whatever pass state we already have on disk,
             // so it's populated even offline before the API sync below runs.
@@ -97,11 +101,14 @@ struct RootView: View {
                 }
             }
 
-            // Sync passed status in background so isPassed is accurate across all views
+            // Sync passed/burned status in background so isPassed and isBurned are accurate across
+            // all views. Burn state can only come from here — WaniKani never reviews a burned item
+            // again, so the app would otherwise only ever learn about burns it performed itself.
             Task {
-                if let passedIds = try? await WaniKaniAPIClient.shared.fetchPassedSubjectIds() {
-                    newStore.applyPassedStatus(passedIds: passedIds)
-                    // Refresh the widget now that learned status is up to date.
+                if let status = try? await WaniKaniAPIClient.shared.fetchSubjectStatus() {
+                    newStore.applyPassedStatus(passedIds: status.passed)
+                    newStore.applyBurnedStatus(burnedIds: status.burned)
+                    // Refresh the widget now that learned/burned status is up to date.
                     WidgetWordSync.update(using: newStore)
                 }
             }

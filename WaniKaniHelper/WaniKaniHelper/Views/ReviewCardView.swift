@@ -10,19 +10,39 @@ struct ReviewCardView: View {
     let store: SubjectStore
     let onSelect: (String) -> Void
     let onConfirm: () -> Void
+    /// Hides the choices behind a reveal button on every card, not just the ones the SRS-stage
+    /// rule catches. Kanji Review sets this — the whole feature is recall practice on material
+    /// that's already been learned, so recognizing an option defeats the point.
+    var alwaysGateChoices: Bool = false
+
+    @State private var hintKanji: CachedSubject?
+    @State private var revealedItemID: Int?
 
     var body: some View {
         let isAnswered = item.selectedChoice != nil
+        let hints = kanjiHints
 
         GeometryReader { geo in
             ScrollView {
                 VStack(spacing: 16) {
                     subjectCard
 
+                    if !hints.isEmpty {
+                        kanjiHintStrip(hints)
+                    }
+
                     // Push choices to roughly dock height
                     Color.clear.frame(height: max(0, geo.size.height * 0.18))
 
                     multipleChoiceGrid
+                        .blur(radius: choicesHidden ? 9 : 0)
+                        .allowsHitTesting(!choicesHidden)
+                        .overlay {
+                            if choicesHidden {
+                                revealButton
+                                    .transition(.opacity)
+                            }
+                        }
                         .overlay(alignment: .top) {
                             if isAnswered {
                                 nextButton
@@ -40,8 +60,81 @@ struct ReviewCardView: View {
                 .padding(.top, 82)
                 .padding(.bottom, 32)
                 .animation(.easeOut(duration: 0.2), value: isAnswered)
+                .animation(.easeOut(duration: 0.2), value: revealedItemID)
+            }
+            .sheet(item: $hintKanji) { kanji in
+                KanjiHintSheet(subject: kanji, store: store)
             }
         }
+    }
+
+    // MARK: - Easy-mode kanji hints
+
+    // In easy mode a vocabulary question shows the kanji it's built from, in the order they appear
+    // in the word, so the meaning of the whole word can be pieced together. Tapping one opens its
+    // own review card as a sheet.
+    private var kanjiHints: [CachedSubject] {
+        guard ReviewSettings.easyMode, item.subject.subjectType == .vocabulary else { return [] }
+        return orderedComponents(for: item.subject).filter { $0.subjectType == .kanji }
+    }
+
+    private func kanjiHintStrip(_ hints: [CachedSubject]) -> some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                ForEach(hints, id: \.id) { kanji in
+                    Button {
+                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                        hintKanji = kanji
+                    } label: {
+                        VStack(spacing: 4) {
+                            Text(kanji.characters ?? kanji.slug ?? "?")
+                                .font(.system(size: 26))
+                            Text(kanji.meanings.first ?? "")
+                                .font(.caption2.bold())
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.7)
+                        }
+                        .foregroundStyle(typeColor(.kanji))
+                        .frame(minWidth: 64)
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 10)
+                        .background(typeColor(.kanji).opacity(0.15))
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(.horizontal, 2)
+        }
+    }
+
+    // MARK: - Reveal gate
+
+    // Kanji and vocabulary at Master or Enlightened have gone a month or more without a review,
+    // so seeing the options straight away turns recall into recognition. Blur them until the
+    // user has committed to an answer in their head.
+    private var choicesHidden: Bool {
+        guard revealedItemID != item.id, item.selectedChoice == nil else { return false }
+        if alwaysGateChoices { return true }
+        let type = item.subject.subjectType
+        guard type == .kanji || type.isVocab else { return false }
+        return item.srsStage >= SRSStage.master && item.srsStage <= SRSStage.enlightened
+    }
+
+    private var revealButton: some View {
+        Button {
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            withAnimation(.easeOut(duration: 0.2)) { revealedItemID = item.id }
+        } label: {
+            Label("Show Answers", systemImage: "eye")
+                .font(.system(size: 17, weight: .bold))
+                .foregroundStyle(.white)
+                .padding(.horizontal, 22)
+                .padding(.vertical, 14)
+                .background(Color("WKTeal"))
+                .clipShape(Capsule())
+        }
+        .buttonStyle(DepthButtonStyle(depth: 4, depthColor: Color(red: 0.0, green: 0.35, blue: 0.35)))
     }
 
     // MARK: - Next button
@@ -124,13 +217,7 @@ struct ReviewCardView: View {
         }
     }
 
-    private func typeColor(_ type: SubjectType) -> Color {
-        switch type {
-        case .radical:                     return Color("WKTeal")
-        case .kanji:                       return Color("AccentPink")
-        case .vocabulary, .kanaVocabulary: return Color("WKPlum")
-        }
-    }
+    private func typeColor(_ type: SubjectType) -> Color { subjectTypeColor(type) }
 
     // MARK: - Multiple choice grid
 

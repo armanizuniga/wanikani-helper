@@ -68,7 +68,8 @@ final class ReviewService {
                     assignmentId: aId,
                     subjectId: assignment.data.subjectId,
                     subject: subject,
-                    questionType: .meaning
+                    questionType: .meaning,
+                    srsStage: assignment.data.srsStage
                 )
 
                 // Radicals and kana vocabulary have no reading question. In Easy Mode, drop the
@@ -79,7 +80,8 @@ final class ReviewService {
                     assignmentId: aId,
                     subjectId: assignment.data.subjectId,
                     subject: subject,
-                    questionType: .reading
+                    questionType: .reading,
+                    srsStage: assignment.data.srsStage
                 ) : nil
 
                 pairs.append((meaningCard, readingCard))
@@ -105,10 +107,24 @@ final class ReviewService {
                 return slots.map { $0.card }
             }
 
-            // Prioritize kanji: all kanji cards come first, then radicals and vocab intermixed.
-            let kanjiPairs = pairs.filter { $0.meaning.subject.subjectType == .kanji }
-            let otherPairs = pairs.filter { $0.meaning.subject.subjectType != .kanji }
-            var items = interleaved(kanjiPairs) + interleaved(otherPairs)
+            // Review order, highest priority first: this level's kanji, then kanji held over from
+            // earlier levels, then this level's vocabulary, then vocabulary from earlier levels.
+            // Radicals come last — they're the quickest cards and the least to relearn. Each group
+            // is interleaved on its own, so a card's reading never drifts into another group.
+            let currentLevel = WKUserData.cachedLevel
+
+            func priority(_ pair: (meaning: ReviewItem, reading: ReviewItem?)) -> Int {
+                let subject = pair.meaning.subject
+                let isCurrentLevel = subject.level == currentLevel
+                switch subject.subjectType {
+                case .kanji:                       return isCurrentLevel ? 0 : 1
+                case .vocabulary, .kanaVocabulary: return isCurrentLevel ? 2 : 3
+                case .radical:                     return 4
+                }
+            }
+
+            let byPriority = Dictionary(grouping: pairs, by: priority)
+            var items = byPriority.keys.sorted().flatMap { interleaved(byPriority[$0] ?? []) }
 
             // Build choice pools
             let allMeanings = items

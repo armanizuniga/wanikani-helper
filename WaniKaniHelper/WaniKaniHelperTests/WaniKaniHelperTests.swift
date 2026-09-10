@@ -40,7 +40,7 @@ struct PromptLibraryTests {
     // Kanji vocabulary with a reading — wordEntry becomes "食べる (たべる) — to eat"
     @Test func compose_withReading_replacesPlaceholder() {
         let result = PromptLibrary.shared.compose(
-            word: "食べる", reading: "たべる", meaning: "to eat", userLevel: 1
+            word: "食べる", reading: "たべる", meaning: "to eat"
         )
         #expect(!result.contains("{{VOCAB_WORD}}"))
         #expect(result.contains("食べる"))
@@ -49,7 +49,7 @@ struct PromptLibraryTests {
     // Kana vocabulary with no reading — wordEntry becomes "ありがとう — thank you"
     @Test func compose_withoutReading_replacesPlaceholder() {
         let result = PromptLibrary.shared.compose(
-            word: "ありがとう", reading: nil, meaning: "thank you", userLevel: 1
+            word: "ありがとう", reading: nil, meaning: "thank you"
         )
         #expect(!result.contains("{{VOCAB_WORD}}"))
         #expect(result.contains("ありがとう"))

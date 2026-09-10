@@ -8,6 +8,7 @@ struct HomeView: View {
     let user: WKUserData
     let store: SubjectStore
     let kanaStore: KanaSRSStore
+    let burnedStore: BurnedKanjiSRSStore
     var onApiKeyUpdated: (String, WKUserData) -> Void = { _, _ in }
     var onSignOut: () -> Void = {}
 
@@ -284,7 +285,7 @@ struct HomeView: View {
                 ReviewSessionView(store: store)
             }
             .navigationDestination(isPresented: $showKanjiReview) {
-                KanjiReviewSetupView(store: store)
+                KanjiReviewSetupView(store: store, burnedStore: burnedStore)
             }
             .navigationDestination(isPresented: $showLessons) {
                 LessonSessionView(store: store)

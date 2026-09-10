@@ -5,14 +5,16 @@ import SwiftUI
 
 struct KanjiReviewSetupView: View {
     let store: SubjectStore
+    let burnedStore: BurnedKanjiSRSStore
 
     @State private var service: KanjiReviewService
     @State private var selected: Set<KanjiCategory> = []
     @State private var showSession = false
 
-    init(store: SubjectStore) {
+    init(store: SubjectStore, burnedStore: BurnedKanjiSRSStore) {
         self.store = store
-        _service = State(initialValue: KanjiReviewService(store: store))
+        self.burnedStore = burnedStore
+        _service = State(initialValue: KanjiReviewService(store: store, burnedStore: burnedStore))
     }
 
     var body: some View {
@@ -88,6 +90,7 @@ struct KanjiReviewSetupView: View {
         let sessionSize = min(total, cap)
 
         return VStack(spacing: 8) {
+            burnedStatsLink
             if total > cap {
                 Text("\(total) selected — a session covers \(cap) at a time.")
                     .font(.caption)
@@ -112,6 +115,41 @@ struct KanjiReviewSetupView: View {
         .padding(.top, 8)
         .padding(.bottom, 12)
         .background(.bar)
+    }
+
+    /// Burned kanji are the only category with a local schedule behind them, so they're the only
+    /// ones there are stats to show. Hidden outright when none are tracked — the screen would have
+    /// nothing on it.
+    @ViewBuilder
+    private var burnedStatsLink: some View {
+        let tracked = burnedStore.trackedCount
+        if tracked > 0 {
+            NavigationLink {
+                BurnedStatsView(store: store, burnedStore: burnedStore)
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: "chart.bar.xaxis")
+                        .font(.system(size: 13, weight: .semibold))
+                    Text("Burned Stats")
+                        .font(.system(size: 15, weight: .semibold, design: .rounded))
+                    Spacer()
+                    Text("\(tracked) tracked")
+                        .font(.system(size: 13, weight: .medium, design: .rounded))
+                        .foregroundStyle(.secondary)
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(.tertiary)
+                }
+                .foregroundStyle(.primary)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 12)
+                .frame(maxWidth: .infinity)
+                .background(Color(.systemGray5).opacity(0.7))
+                .clipShape(RoundedRectangle(cornerRadius: 14))
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+        }
     }
 
     private func color(for category: KanjiCategory) -> Color {

@@ -1,6 +1,6 @@
 // SwiftData-backed store for all WaniKani subjects (radicals, kanji, vocabulary).
 // Handles upserting subjects from the API, reading subjects by level or ID, tracking pass/burn state,
-// syncing passed status from WaniKani assignments, and seeding from the bundled JSON on first launch.
+// syncing passed/burned status from WaniKani assignments, and seeding from the bundled JSON on first launch.
 import SwiftData
 import Observation
 import Foundation
@@ -133,6 +133,20 @@ final class SubjectStore {
         save()
     }
 
+    /// Mirrors `applyPassedStatus` for burn state. Burning implies passing, so this is safe to run
+    /// straight after it — the two never contradict each other for the same subject.
+    func applyBurnedStatus(burnedIds: Set<Int>) {
+        let descriptor = FetchDescriptor<CachedSubject>()
+        let all = (try? context.fetch(descriptor)) ?? []
+        for subject in all {
+            let shouldBeBurned = burnedIds.contains(subject.id)
+            if subject.isBurned != shouldBeBurned {
+                subject.isBurned = shouldBeBurned
+            }
+        }
+        save()
+    }
+
     func markPassed(subjectId: Int) {
         let descriptor = FetchDescriptor<CachedSubject>(
             predicate: #Predicate { $0.id == subjectId }
@@ -258,6 +272,20 @@ final class SubjectStore {
     }
 
     // MARK: - Lock Screen widget
+
+    /// Burned vocabulary (not hidden) mapped to widget words. Burned items never come back on
+    /// WaniKani, so they're the words most at risk of fading — the widget's first choice.
+    func burnedVocabularyWords(limit: Int = 200) -> [WidgetWord] {
+        let descriptor = FetchDescriptor<CachedSubject>(
+            predicate: #Predicate {
+                ($0.type == "vocabulary" || $0.type == "kana_vocabulary")
+                    && $0.isBurned && $0.hiddenAt == nil
+            }
+        )
+        let subjects = (try? context.fetch(descriptor)) ?? []
+        let words = subjects.compactMap { WidgetWord(subject: $0) }
+        return Array(words.shuffled().prefix(limit))
+    }
 
     /// Learned vocabulary (passed, not hidden) mapped to lightweight widget words,
     /// shuffled and capped so the shared file stays small.
