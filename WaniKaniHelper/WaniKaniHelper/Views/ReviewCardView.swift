@@ -78,6 +78,12 @@ struct ReviewCardView: View {
         return orderedComponents(for: item.subject).filter { $0.subjectType == .kanji }
     }
 
+    // In easy mode a vocabulary question also shows the word's primary reading under it.
+    private var easyModeReading: String? {
+        guard ReviewSettings.easyMode, item.subject.subjectType == .vocabulary else { return nil }
+        return item.subject.readings.first
+    }
+
     private func kanjiHintStrip(_ hints: [CachedSubject]) -> some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
@@ -177,6 +183,22 @@ struct ReviewCardView: View {
                     .clipShape(Capsule())
 
                 Spacer()
+
+                if let reading = easyModeReading {
+                    Button {
+                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                        JapaneseSpeaker.shared.speak(reading)
+                    } label: {
+                        Image(systemName: "speaker.wave.2.fill")
+                            .font(.system(size: 17, weight: .semibold))
+                            .foregroundStyle(typeColor(item.subject.subjectType))
+                            .padding(8)
+                            .background(typeColor(item.subject.subjectType).opacity(0.2))
+                            .clipShape(Circle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Play reading")
+                }
             }
 
             if let chars = item.subject.characters {
@@ -196,6 +218,12 @@ struct ReviewCardView: View {
             } else {
                 Text(item.subject.slug ?? "?")
                     .font(.system(size: 40, weight: .semibold))
+            }
+
+            if let reading = easyModeReading {
+                Text(reading)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
 
             Text("Level \(item.subject.level)")

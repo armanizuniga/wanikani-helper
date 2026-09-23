@@ -1,6 +1,7 @@
 // This view is the main dashboard shown after authentication. Displays the daily review goal,
-// lesson and review action tiles, current level progress, kana practice shortcuts, an AI reading
-// practice card, and a Tools section with kanji progress and API key management.
+// lesson and review action tiles, the two local practice shortcuts (Kanji Review and Vocab Review),
+// current level progress, kana practice shortcuts, an AI reading practice card, and a Tools section
+// with kanji progress and API key management.
 import SwiftUI
 import UIKit
 
@@ -8,7 +9,8 @@ struct HomeView: View {
     let user: WKUserData
     let store: SubjectStore
     let kanaStore: KanaSRSStore
-    let burnedStore: BurnedKanjiSRSStore
+    let burnedKanjiStore: BurnedKanjiSRSStore
+    let burnedVocabStore: BurnedVocabSRSStore
     var onApiKeyUpdated: (String, WKUserData) -> Void = { _, _ in }
     var onSignOut: () -> Void = {}
 
@@ -23,7 +25,7 @@ struct HomeView: View {
     @State private var isLoadingSummary = false
     @State private var lessonAssignmentCount: Int = 0
     @State private var showReview = false
-    @State private var showKanjiReview = false
+    @State private var practiceKind: PracticeKind?
     @State private var showLessons = false
     @State private var dailyCompleted: Int = DailyGoal.completed
     @State private var levelProgress: LevelProgress?
@@ -169,20 +171,22 @@ struct HomeView: View {
                             .clipShape(RoundedRectangle(cornerRadius: 14))
                         }
 
-                        // Kanji Review tile — always available (local practice, not gated by the review queue)
-                        Button {
-                            showKanjiReview = true
-                        } label: {
-                            Label("Kanji Review", systemImage: "square.stack.3d.up.fill")
-                                .font(.system(size: 17, weight: .bold))
-                                .foregroundStyle(.white)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(.vertical, 22)
-                                .padding(.horizontal, 16)
-                                .background(Color(red: 0.64, green: 0.57, blue: 0.86))
-                                .clipShape(RoundedRectangle(cornerRadius: 14))
-                        }
-                        .buttonStyle(DepthButtonStyle(depth: 5, depthColor: Color(red: 0.50, green: 0.43, blue: 0.74)))
+                        // Practice tiles — always available (local practice, not gated by the review queue)
+                        practiceTile(
+                            .kanji,
+                            symbol: "square.stack.3d.up.fill",
+                            face: Color(red: 0.64, green: 0.57, blue: 0.86),
+                            depth: Color(red: 0.50, green: 0.43, blue: 0.74)
+                        )
+
+                        // Plum is already the app's vocabulary colour (level progress, card
+                        // headers), so the tile reads as vocab before the label is even scanned.
+                        practiceTile(
+                            .vocabulary,
+                            symbol: "text.book.closed.fill",
+                            face: Color("WKPlum"),
+                            depth: Color("WKPlumDeep")
+                        )
                     }
                     .listRowBackground(Color.clear)
                     .listRowSeparator(.hidden)
@@ -284,8 +288,12 @@ struct HomeView: View {
             .navigationDestination(isPresented: $showReview) {
                 ReviewSessionView(store: store)
             }
-            .navigationDestination(isPresented: $showKanjiReview) {
-                KanjiReviewSetupView(store: store, burnedStore: burnedStore)
+            .navigationDestination(item: $practiceKind) { kind in
+                PracticeReviewSetupView(
+                    kind: kind,
+                    store: store,
+                    burnedStore: kind == .kanji ? burnedKanjiStore : burnedVocabStore
+                )
             }
             .navigationDestination(isPresented: $showLessons) {
                 LessonSessionView(store: store)
@@ -505,6 +513,31 @@ struct HomeView: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+    }
+
+    // MARK: - Practice tiles
+
+    /// One of the two local practice entry points. Both screens are the same feature over
+    /// different material, so they're the same tile with a different kind, colour and glyph.
+    private func practiceTile(
+        _ kind: PracticeKind,
+        symbol: String,
+        face: Color,
+        depth: Color
+    ) -> some View {
+        Button {
+            practiceKind = kind
+        } label: {
+            Label(kind.reviewTitle, systemImage: symbol)
+                .font(.system(size: 17, weight: .bold))
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.vertical, 22)
+                .padding(.horizontal, 16)
+                .background(face)
+                .clipShape(RoundedRectangle(cornerRadius: 14))
+        }
+        .buttonStyle(DepthButtonStyle(depth: 5, depthColor: depth))
     }
 
     // MARK: - Kana Practice

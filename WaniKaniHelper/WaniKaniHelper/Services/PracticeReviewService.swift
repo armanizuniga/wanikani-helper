@@ -1,5 +1,8 @@
-// Drives the Kanji Review practice feature: a local-only self-quiz over the user's kanji,
-// filtered by SRS-stage category (Apprentice / Guru / Master / Enlightened / Burned).
+// Drives the local practice features — Kanji Review and Vocab Review — a self-quiz over the user's
+// own subjects, filtered by SRS-stage category (Apprentice / Guru / Master / Enlightened / Burned).
+//
+// One service covers both: `kind` decides which subject types are fetched and how the screens read,
+// and `burnedStore` is whichever local burned schedule belongs to that kind.
 //
 // Unlike ReviewService, this NEVER submits to WaniKani and never changes SRS state or the daily
 // goal — burned/enlightened items can't be reviewed on WaniKani, and this is pure practice.
@@ -8,10 +11,12 @@ import Observation
 
 @Observable
 @MainActor
-final class KanjiReviewService {
+final class PracticeReviewService {
+    let kind: PracticeKind
+
     // Category-selection screen state.
-    private(set) var counts: [KanjiCategory: Int] = [:]
-    private var poolsBySubject: [KanjiCategory: [Int]] = [:]
+    private(set) var counts: [SRSCategory: Int] = [:]
+    private var poolsBySubject: [SRSCategory: [Int]] = [:]
     private(set) var isLoadingCategories = false
     private(set) var categoryError: String?
 
@@ -27,13 +32,23 @@ final class KanjiReviewService {
 
     private let api = WaniKaniAPIClient.shared
     private let store: SubjectStore
-    private let burnedStore: BurnedKanjiSRSStore
+    private let burnedStore: any BurnedSRSStoring
 
-    /// Kanji per session. Short on purpose: the cards are recall practice on mastered material,
+    /// Subjects per session. Short on purpose: the cards are recall practice on mastered material,
     /// and a session that ends is worth more than one that gets abandoned.
     static let sessionCap = 15
 
-    init(store: SubjectStore, burnedStore: BurnedKanjiSRSStore) {
+    /// WaniKani `subject_types` filter for this kind. Vocabulary covers both the kanji-bearing
+    /// words and the kana-only ones, which WaniKani models as separate subject types.
+    private var subjectTypes: String {
+        switch kind {
+        case .kanji:      return "kanji"
+        case .vocabulary: return "vocabulary,kana_vocabulary"
+        }
+    }
+
+    init(kind: PracticeKind, store: SubjectStore, burnedStore: any BurnedSRSStoring) {
+        self.kind = kind
         self.store = store
         self.burnedStore = burnedStore
     }
@@ -43,7 +58,7 @@ final class KanjiReviewService {
         return queue[currentIndex]
     }
 
-    // Progress is tracked per kanji (each kanji = a meaning card + a reading card).
+    // Progress is tracked per subject (one card each, so this is also the card count).
     var completedCount: Int {
         let grouped = Dictionary(grouping: queue, by: { $0.subjectId })
         return grouped.filter { _, cards in cards.allSatisfy { $0.answered } }.count
@@ -51,9 +66,9 @@ final class KanjiReviewService {
 
     var totalCount: Int { Set(queue.map { $0.subjectId }).count }
 
-    func count(for category: KanjiCategory) -> Int { counts[category] ?? 0 }
+    func count(for category: SRSCategory) -> Int { counts[category] ?? 0 }
 
-    var hasAnyKanji: Bool { counts.values.contains { $0 > 0 } }
+    var hasAnySubjects: Bool { counts.values.contains { $0 > 0 } }
 
     // MARK: - Load categories
 
@@ -63,29 +78,29 @@ final class KanjiReviewService {
         defer { isLoadingCategories = false }
 
         do {
-            let assignments = try await api.fetchKanjiAssignments()
-            var newCounts: [KanjiCategory: Int] = [:]
-            var newPools: [KanjiCategory: [Int]] = [:]
+            let assignments = try await api.fetchAssignments(subjectTypes: subjectTypes)
+            var newCounts: [SRSCategory: Int] = [:]
+            var newPools: [SRSCategory: [Int]] = [:]
             for resource in assignments where !resource.data.hidden {
-                guard let category = KanjiCategory.category(for: resource.data.srsStage) else { continue }
+                guard let category = SRSCategory.category(for: resource.data.srsStage) else { continue }
                 newCounts[category, default: 0] += 1
                 newPools[category, default: []].append(resource.data.subjectId)
             }
             counts = newCounts
             poolsBySubject = newPools
             // Same assignments, no extra request: keep the local burned schedule in step with
-            // WaniKani (new burns in, resurrected kanji out).
+            // WaniKani (new burns in, resurrected items out).
             burnedStore.sync(assignments: assignments)
         } catch {
             if error.isNetworkFailure {
-                categoryError = "You're offline. Kanji Review needs a connection to load your progress."
+                categoryError = "You're offline. \(kind.reviewTitle) needs a connection to load your progress."
             } else {
                 categoryError = error.localizedDescription
             }
         }
     }
 
-    func selectedTotal(_ categories: Set<KanjiCategory>) -> Int {
+    func selectedTotal(_ categories: Set<SRSCategory>) -> Int {
         var ids = Set<Int>()
         for category in categories { ids.formUnion(poolsBySubject[category] ?? []) }
         return ids.count
@@ -93,11 +108,11 @@ final class KanjiReviewService {
 
     // MARK: - Start session
 
-    func startSession(categories: Set<KanjiCategory>) {
-        // Burned kanji are drawn from the local SRS schedule (new burns first, then weakest) rather
-        // than at random, so repeat sessions keep surfacing new material and whatever is fading.
-        // Everything else is still a random draw — nothing tracks per-kanji accuracy outside the
-        // burned schedule.
+    func startSession(categories: Set<SRSCategory>) {
+        // Burned subjects are drawn from the local SRS schedule (new burns first, then weakest)
+        // rather than at random, so repeat sessions keep surfacing new material and whatever is
+        // fading. Everything else is still a random draw — nothing tracks per-subject accuracy
+        // outside the burned schedule.
         var selectedIds: [Int] = []
         if categories.contains(.burned) {
             selectedIds = burnedStore.prioritizedSubjectIds(limit: Self.sessionCap)
@@ -114,8 +129,8 @@ final class KanjiReviewService {
         let subjectMap = store.subjectMap(ids: selectedIds)
         let subjects = selectedIds.compactMap { subjectMap[$0] }
 
-        // Meaning-only practice — one card per kanji (no reading/pronunciation question).
-        // Kept in selection order rather than shuffled: burned kanji arrive weakest-first from the
+        // Meaning-only practice — one card per subject (no reading/pronunciation question).
+        // Kept in selection order rather than shuffled: burned items arrive weakest-first from the
         // local schedule, and that's the order worth asking them in while attention is fresh.
         var items: [ReviewItem] = subjects.map { subject in
             ReviewItem(
@@ -155,7 +170,7 @@ final class KanjiReviewService {
         guard currentIndex < queue.count else { return }
         queue[currentIndex].answered = true
 
-        // Feed the local burned schedule so this kanji comes back sooner if missed, later if not.
+        // Feed the local burned schedule so this subject comes back sooner if missed, later if not.
         let item = queue[currentIndex]
         if burnedSubjectIds.contains(item.subjectId), let correct = item.choiceWasCorrect {
             if correct {

@@ -315,8 +315,8 @@ struct BurnedKanjiSRSStoreTests {
     // Raw accuracy ties 1/1 with 20/20 and 0/1 with 0/5, which would let a single lucky or unlucky
     // answer top either list. Ranking has to break those ties by weight of evidence.
     @Test func rankScore_ordersByEvidenceWhenAccuracyTies() {
-        func stat(correct: Int, incorrect: Int) -> BurnedKanjiStat {
-            BurnedKanjiStat(
+        func stat(correct: Int, incorrect: Int) -> BurnedStat {
+            BurnedStat(
                 subjectId: 1, stage: 1, dueAt: .distantPast, burnedAt: nil,
                 lastPracticedAt: nil, totalCorrect: correct, totalIncorrect: incorrect,
                 consecutiveCorrect: correct
@@ -336,14 +336,14 @@ struct BurnedKanjiSRSStoreTests {
     // Lifetime misses never decrease, so without a way back a single miss would pin a kanji to
     // "Needs Work" for good however well it was known afterwards. The streak is that way back.
     @Test func streak_clearsAPastMiss() {
-        func stat(correct: Int, incorrect: Int, streak: Int) -> BurnedKanjiStat {
-            BurnedKanjiStat(
+        func stat(correct: Int, incorrect: Int, streak: Int) -> BurnedStat {
+            BurnedStat(
                 subjectId: 1, stage: 1, dueAt: .distantPast, burnedAt: nil,
                 lastPracticedAt: nil, totalCorrect: correct, totalIncorrect: incorrect,
                 consecutiveCorrect: streak
             )
         }
-        let needed = BurnedKanjiStat.redemptionStreak
+        let needed = BurnedStat.redemptionStreak
 
         // A clean record is strong from the first answer — the streak rule only gates recovery.
         let clean = stat(correct: 1, incorrect: 0, streak: 1)
@@ -386,7 +386,7 @@ struct BurnedKanjiSRSStoreTests {
         store.recordIncorrect(subjectId: 1)
         #expect(try #require(store.stats().first).needsWork)
 
-        for _ in 1..<BurnedKanjiStat.redemptionStreak {
+        for _ in 1..<BurnedStat.redemptionStreak {
             store.recordCorrect(subjectId: 1)
         }
         #expect(try #require(store.stats().first).needsWork)
@@ -414,7 +414,7 @@ struct BurnedKanjiSRSStoreTests {
 
         let counts = store.stageCounts()
 
-        #expect(counts.count == BurnedKanjiSRSStore.intervalDays.count)
+        #expect(counts.count == BurnedSRS.intervalDays.count)
         #expect(counts[0] == 1)
         #expect(counts[3] == 2)
         #expect(counts.reduce(0, +) == 3)
@@ -423,18 +423,18 @@ struct BurnedKanjiSRSStoreTests {
     // Labels are derived from the interval table so the chart can't drift out of step with the
     // schedule it's describing.
     @Test func stageLabel_derivesFromIntervalTable() {
-        #expect(BurnedKanjiSRSStore.stageLabel(0) == "New")
-        #expect(BurnedKanjiSRSStore.stageLabel(1) == "1d")
-        #expect(BurnedKanjiSRSStore.stageLabel(BurnedKanjiSRSStore.intervalDays.count - 1) == "180d")
+        #expect(BurnedSRS.stageLabel(0) == "New")
+        #expect(BurnedSRS.stageLabel(1) == "1d")
+        #expect(BurnedSRS.stageLabel(BurnedSRS.intervalDays.count - 1) == "180d")
         // Out of range falls back rather than trapping.
-        #expect(BurnedKanjiSRSStore.stageLabel(99) == "New")
+        #expect(BurnedSRS.stageLabel(99) == "New")
     }
 
     // Stage is capped so the interval table is never indexed out of bounds.
     @Test func recordCorrect_capsAtMaxStage() throws {
         let context = try makeContext()
         let store = BurnedKanjiSRSStore(context: context)
-        let maxStage = BurnedKanjiSRSStore.intervalDays.count - 1
+        let maxStage = BurnedSRS.intervalDays.count - 1
         insert(context, subjectId: 1, stage: maxStage, dueAt: Date(), firstPracticedAt: Date())
 
         store.recordCorrect(subjectId: 1)

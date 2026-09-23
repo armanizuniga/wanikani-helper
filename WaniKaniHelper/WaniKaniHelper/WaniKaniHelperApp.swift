@@ -1,7 +1,7 @@
 // App entry point. Configures the SwiftData model container for CachedSubject, KanaSRSEntry and
-// BurnedKanjiSRSEntry, bootstraps the SubjectStore, KanaSRSStore and BurnedKanjiSRSStore, and routes
-// between AuthView (first launch) and HomeView (authenticated) based on whether a valid API key is
-// stored.
+// the two burned-practice schedules, bootstraps the SubjectStore, KanaSRSStore and both burned
+// stores, and routes between AuthView (first launch) and HomeView (authenticated) based on whether
+// a valid API key is stored.
 import SwiftUI
 import SwiftData
 
@@ -11,7 +11,12 @@ struct WaniKaniHelperApp: App {
         WindowGroup {
             RootView()
         }
-        .modelContainer(for: [CachedSubject.self, KanaSRSEntry.self, BurnedKanjiSRSEntry.self])
+        .modelContainer(for: [
+            CachedSubject.self,
+            KanaSRSEntry.self,
+            BurnedKanjiSRSEntry.self,
+            BurnedVocabSRSEntry.self,
+        ])
     }
 }
 
@@ -19,7 +24,8 @@ struct RootView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var store: SubjectStore?
     @State private var kanaStore: KanaSRSStore?
-    @State private var burnedStore: BurnedKanjiSRSStore?
+    @State private var burnedKanjiStore: BurnedKanjiSRSStore?
+    @State private var burnedVocabStore: BurnedVocabSRSStore?
     @State private var apiKey: String? = {
         // Migrate from UserDefaults to Keychain on first run after update
         if let legacy = UserDefaults.standard.string(forKey: "apiKey") {
@@ -39,12 +45,13 @@ struct RootView: View {
     var body: some View {
         Group {
             if let store {
-                if let user = currentUser, let kanaStore, let burnedStore {
+                if let user = currentUser, let kanaStore, let burnedKanjiStore, let burnedVocabStore {
                     HomeView(
                         user: user,
                         store: store,
                         kanaStore: kanaStore,
-                        burnedStore: burnedStore,
+                        burnedKanjiStore: burnedKanjiStore,
+                        burnedVocabStore: burnedVocabStore,
                         onApiKeyUpdated: { key, updatedUser in
                             KeychainService.save(key)
                             if let data = try? JSONEncoder().encode(updatedUser) {
@@ -79,7 +86,8 @@ struct RootView: View {
             newStore.importFromBundle()
             store = newStore
             kanaStore = KanaSRSStore(context: modelContext)
-            burnedStore = BurnedKanjiSRSStore(context: modelContext)
+            burnedKanjiStore = BurnedKanjiSRSStore(context: modelContext)
+            burnedVocabStore = BurnedVocabSRSStore(context: modelContext)
 
             // Seed the Lock Screen widget from whatever pass state we already have on disk,
             // so it's populated even offline before the API sync below runs.

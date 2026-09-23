@@ -478,11 +478,13 @@ actor WaniKaniAPIClient {
         return all
     }
 
-    // All started kanji assignments (any SRS stage), for the local Kanji Review practice feature.
-    // Stage 0 (still in lessons) is included by the API but filtered out by the caller via category.
-    func fetchKanjiAssignments() async throws -> [WKResource<WKAssignmentData>] {
+    /// Every started assignment (any SRS stage) for the given WaniKani subject types — `"kanji"`,
+    /// or `"vocabulary,kana_vocabulary"`. Backs the local practice features, which need the stage of
+    /// everything the user has started rather than just what's due. Stage 0 (still in lessons) comes
+    /// back too, and is filtered out by the caller via category.
+    func fetchAssignments(subjectTypes: String) async throws -> [WKResource<WKAssignmentData>] {
         var all: [WKResource<WKAssignmentData>] = []
-        var nextURL: URL? = URL(string: baseURL + "/assignments?subject_types=kanji&per_page=500")
+        var nextURL: URL? = URL(string: baseURL + "/assignments?subject_types=\(subjectTypes)&per_page=500")
         while let url = nextURL {
             let page: WKCollection<WKResource<WKAssignmentData>> = try await requestURL(url)
             all.append(contentsOf: page.data)

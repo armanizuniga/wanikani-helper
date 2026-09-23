@@ -65,19 +65,19 @@ Generated sentences are built from one of 135 grammar prompts spanning N5 to N1,
 
 > **Note on the local models.** Apple Foundation Models triggers safety guardrails on a large number of vocabulary words, blocking generation entirely. Qwen2.5 produces consistent sentences, but they're often not grammatically correct or natural sounding, and hallucinates to korean for some reason. The pre-generated database was built from larger models running off-device to route around both, and is the recommended default. Sentences through level 17 come from Claude Opus; the rest were produced with gemma3 through [wanikani-sentence-generator](https://github.com/armanizuniga/wanikani-sentence-generator), filtered so the target word actually appears in the sentence.
 
-### Kanji Review
+### Kanji Review and Vocab Review
 
-Kanji Review is practice, and only practice. It's a self-quiz you can run whenever you want over kanji you've already learned, using the same multiple-choice cards as a real review but without touching your WaniKani account.
+These two are practice, and only practice. Each is a self-quiz you can run whenever you want over material you've already learned, using the same multiple-choice cards as a real review but without touching your WaniKani account. They're the same feature over different subjects: Kanji Review quizzes your kanji, Vocab Review quizzes your vocabulary, including kana-only words.
 
-Your kanji are grouped by SRS stage: Apprentice, Guru, Master, Enlightened, and Burned. The setup screen lists how many you have sitting in each stage, which is a useful picture on its own of where your kanji actually stand. Pick any combination of stages and the app builds a session of 15 kanji from that pool. Every card here opens with its choices blurred behind a **Show Answers** button, since the whole mode is recall practice on material you've already learned.
+Your subjects are grouped by SRS stage: Apprentice, Guru, Master, Enlightened, and Burned. The setup screen lists how many you have sitting in each stage, which is a useful picture on its own of where you actually stand. Pick any combination of stages and the app builds a session of 15 from that pool. Every card here opens with its choices blurred behind a **Show Answers** button, since the whole mode is recall practice on material you've already learned.
 
-Nothing here is sent to WaniKani. Answers don't change your SRS stages, don't count toward your daily goal, and don't consume anything from your review queue. It exists mainly for burned and enlightened kanji, which WaniKani treats as finished and won't show you again, but which are exactly the ones that quietly fade.
+Nothing here is sent to WaniKani. Answers don't change your SRS stages, don't count toward your daily goal, and don't consume anything from your review queue. It exists mainly for burned and enlightened items, which WaniKani treats as finished and won't show you again, but which are exactly the ones that quietly fade.
 
-**Burned kanji get their own schedule.** WaniKani retires a burned item permanently, so the app keeps a local SRS of its own over every kanji it sees burned on your account. Intervals run 1, 3, 7, 14, 30, 90 and 180 days. A newly burned kanji is queued immediately so it's never quietly filed away, a correct answer pushes it further out, and a miss drops it back two stages. Resurrect a kanji on WaniKani and it leaves this queue, since the real SRS has it again.
+**Burned items get their own schedule.** WaniKani retires a burned item permanently, so the app keeps a local SRS of its own over everything it sees burned on your account. Kanji and vocabulary are tracked on separate schedules, so a session in one never draws from or scores against the other. Intervals run 1, 3, 7, 14, 30, 90 and 180 days. A newly burned item is queued immediately so it's never quietly filed away, a correct answer pushes it further out, and a miss drops it back two stages. Resurrect something on WaniKani and it leaves this queue, since the real SRS has it again.
 
-Sessions over the burned pool lead with kanji you've never practiced here, then the ones you're weakest at. Weakness is measured on a smoothed accuracy, so a kanji answered once doesn't outrank one with a long record either way, and due date only breaks ties. The point is to spend a short session on what's actually fading rather than on whatever happened to wait longest.
+Sessions over the burned pool lead with items you've never practiced here, then the ones you're weakest at. Weakness is measured on a smoothed accuracy, so an item answered once doesn't outrank one with a long record either way, and due date only breaks ties. The point is to spend a short session on what's actually fading rather than on whatever happened to wait longest.
 
-**Burned Stats**, linked from the setup screen, is the record behind that: how far each burned kanji has been pushed out, which ones you still miss, and which are solid. A kanji that's been missed sits under Needs Work with a count of how many correct answers are left to clear it, and four right in a row moves it back across to Strongest, marked as recovered. All of it is local and none of it exists on WaniKani.
+**Burned Stats**, linked from each setup screen, is the record behind that: how far each burned item has been pushed out, which ones you still miss, and which are solid. Something you've missed sits under Needs Work with a count of how many correct answers are left to clear it, and four right in a row moves it back across to Strongest, marked as recovered. All of it is local and none of it exists on WaniKani.
 
 ### Lock Screen widget
 
@@ -93,7 +93,7 @@ Japanese names use readings that often aren't the ones WaniKani teaches. 中 is 
 
 Practice runs over the 100 most common surnames, a set of common given names, or full names built by pairing the two, which is how you'd actually meet them. Answer, and the reveal shows the reading in hiragana and romaji, a per-kanji breakdown of how the reading maps on, and what you already know each kanji as from WaniKani, so the contrast is visible.
 
-Readings come from [JMnedict](https://www.edrdg.org/enamdict/enamdict_doc.html) cross-checked against published frequency rankings. Nothing is composed at runtime: name readings are irregular enough that a generated name couldn't be quizzed honestly, since 愛 alone has 52 attested readings. Like Kanji Review, nothing here touches your WaniKani account.
+Readings come from [JMnedict](https://www.edrdg.org/enamdict/enamdict_doc.html) cross-checked against published frequency rankings. Nothing is composed at runtime: name readings are irregular enough that a generated name couldn't be quizzed honestly, since 愛 alone has 52 attested readings. Like Kanji Review and Vocab Review, nothing here touches your WaniKani account.
 
 ### Kana practice
 
@@ -169,15 +169,16 @@ WaniKaniHelper/
 │   │   ├── Subject.swift             — CachedSubject SwiftData model
 │   │   ├── ReviewItem.swift          — ReviewItem struct, QuestionType enum
 │   │   ├── KanaSRSEntry.swift        — KanaSRSEntry SwiftData model
-│   │   ├── KanjiCategory.swift       — SRS-stage groupings for Kanji Review
-│   │   ├── BurnedKanjiSRSEntry.swift — local SRS record for one burned kanji
-│   │   ├── BurnedKanjiStat.swift     — value snapshot and ranking rules for Burned Stats
+│   │   ├── SRSCategory.swift         — SRS-stage groupings shared by both practice modes
+│   │   ├── PracticeKind.swift        — kanji vs. vocabulary, and the copy that differs
+│   │   ├── BurnedSRSEntry.swift      — protocol plus the kanji and vocab SwiftData records
+│   │   ├── BurnedStat.swift          — value snapshot and ranking rules for Burned Stats
 │   │   └── JapaneseName.swift        — name entry, reading, and per-kanji segments
 │   ├── Services/
 │   │   ├── WaniKaniAPI.swift         — API client, all endpoints, response types
 │   │   ├── ReviewService.swift       — review session state, Easy Mode, submission
 │   │   ├── LessonService.swift       — lesson session state
-│   │   ├── KanjiReviewService.swift  — local-only kanji practice, never submits
+│   │   ├── PracticeReviewService.swift — local-only kanji and vocab practice, never submits
 │   │   ├── KanaReviewService.swift   — kana session state and grading
 │   │   ├── KanaData.swift            — static hiragana/katakana tables
 │   │   ├── NameStore.swift           — loads the bundled name list
@@ -204,7 +205,7 @@ WaniKaniHelper/
 │   ├── Storage/
 │   │   ├── SubjectStore.swift        — SwiftData context for WaniKani subjects
 │   │   ├── KanaSRSStore.swift        — SwiftData context for kana SRS entries
-│   │   └── BurnedKanjiSRSStore.swift — local schedule over burned kanji, selection and results
+│   │   └── BurnedSRSStore.swift      — local schedule over burned items, selection and results
 │   ├── Views/
 │   │   ├── AuthView.swift            — API key entry and validation, first launch and changes
 │   │   ├── HomeView.swift            — dashboard: goal ring, tiles, level progress
@@ -212,9 +213,9 @@ WaniKaniHelper/
 │   │   ├── ReviewSessionView.swift   — WaniKani review session
 │   │   ├── LessonSessionView.swift   — lesson card UI
 │   │   ├── KanjiHintSheet.swift       — single-kanji popup card, opened from a vocab question
-│   │   ├── KanjiReviewSetupView.swift   — category picker for kanji practice
-│   │   ├── KanjiReviewSessionView.swift — kanji practice session
-│   │   ├── BurnedStatsView.swift     — burned kanji record: stages, Needs Work, Strongest
+│   │   ├── PracticeReviewSetupView.swift   — category picker for kanji and vocab practice
+│   │   ├── PracticeReviewSessionView.swift — kanji and vocab practice session
+│   │   ├── BurnedStatsView.swift     — burned record: stages, Needs Work, Strongest
 │   │   ├── NamePracticeSetupView.swift   — name practice mode picker
 │   │   ├── NamePracticeSessionView.swift — name quiz and reveal
 │   │   ├── KanaReviewView.swift      — kana practice UI
@@ -267,6 +268,8 @@ The app started as a simple tool for one problem: getting through review backlog
 **Burned kanji schedule.** Kanji Review could reach burned kanji but had no memory of it, so the same handful kept coming up while others were never seen. A local SRS was added over every burned kanji, with a Burned Stats screen showing which ones have held up and which are fading, and the Lock Screen widget was pointed at burned vocabulary for the same reason.
 
 **Answering before looking.** Multiple choice makes a card easy to recognize even when you couldn't have recalled it, which is fine for material you're actively learning and misleading for material you're not. Choices are now blurred behind a button on the cards where that matters: Master and Enlightened items in a real review, and everything in Kanji Review. Sessions were also reordered to lead with what's most worth doing, by level in reviews and by weakness in burned practice.
+
+**Vocab Review.** Kanji Review turned out to be the mode I actually used, and the same gap exists on the vocabulary side: burned words are retired just as permanently, and a word you can't read is a word you've lost regardless of whether its kanji are solid. Vocab Review is the same screen over vocabulary, with its own burned schedule and its own Burned Stats, kept separate from the kanji one so neither borrows the other's record. Rather than copy the feature, the schedule, the setup screen and the session screen were made to take a subject kind, so both modes now run the same code.
 
 **Polish.** Over time the API key was moved to secure storage, a daily goal ring was added to the home screen, and offline warnings were added for when you lose connection mid-session.
 

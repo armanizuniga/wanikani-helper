@@ -1,20 +1,25 @@
-// Entry screen for Kanji Review. Loads the user's kanji grouped by SRS-stage category, shows each
-// category with a live count, lets the user multi-select which to practice, then starts a local
-// session over the union of the selected categories.
+// Entry screen for the local practice features (Kanji Review and Vocab Review). Loads the user's
+// subjects of the given kind grouped by SRS-stage category, shows each category with a live count,
+// lets the user multi-select which to practice, then starts a local session over the union of the
+// selected categories.
 import SwiftUI
 
-struct KanjiReviewSetupView: View {
+struct PracticeReviewSetupView: View {
+    let kind: PracticeKind
     let store: SubjectStore
-    let burnedStore: BurnedKanjiSRSStore
+    let burnedStore: any BurnedSRSStoring
 
-    @State private var service: KanjiReviewService
-    @State private var selected: Set<KanjiCategory> = []
+    @State private var service: PracticeReviewService
+    @State private var selected: Set<SRSCategory> = []
     @State private var showSession = false
 
-    init(store: SubjectStore, burnedStore: BurnedKanjiSRSStore) {
+    init(kind: PracticeKind, store: SubjectStore, burnedStore: any BurnedSRSStoring) {
+        self.kind = kind
         self.store = store
         self.burnedStore = burnedStore
-        _service = State(initialValue: KanjiReviewService(store: store, burnedStore: burnedStore))
+        _service = State(
+            initialValue: PracticeReviewService(kind: kind, store: store, burnedStore: burnedStore)
+        )
     }
 
     var body: some View {
@@ -23,17 +28,17 @@ struct KanjiReviewSetupView: View {
                 loadingView
             } else if let error = service.categoryError {
                 errorView(error)
-            } else if !service.hasAnyKanji {
-                noKanjiView
+            } else if !service.hasAnySubjects {
+                emptyStateView
             } else {
                 categoryList
             }
         }
-        .navigationTitle("Kanji Review")
+        .navigationTitle(kind.reviewTitle)
         .navigationBarTitleDisplayMode(.inline)
         .task { if service.counts.isEmpty { await service.loadCategories() } }
         .navigationDestination(isPresented: $showSession) {
-            KanjiReviewSessionView(service: service, store: store)
+            PracticeReviewSessionView(service: service, store: store)
         }
     }
 
@@ -43,7 +48,7 @@ struct KanjiReviewSetupView: View {
         VStack(spacing: 0) {
             List {
                 Section {
-                    ForEach(KanjiCategory.allCases) { category in
+                    ForEach(SRSCategory.allCases) { category in
                         categoryRow(category)
                     }
                 } footer: {
@@ -56,7 +61,7 @@ struct KanjiReviewSetupView: View {
         }
     }
 
-    private func categoryRow(_ category: KanjiCategory) -> some View {
+    private func categoryRow(_ category: SRSCategory) -> some View {
         let count = service.count(for: category)
         let isOn = selected.contains(category)
         let disabled = count == 0
@@ -66,7 +71,7 @@ struct KanjiReviewSetupView: View {
         } label: {
             HStack(spacing: 12) {
                 Circle()
-                    .fill(color(for: category))
+                    .fill(category.color)
                     .frame(width: 12, height: 12)
                 Text(category.title)
                     .foregroundStyle(.primary)
@@ -86,7 +91,7 @@ struct KanjiReviewSetupView: View {
 
     private var startBar: some View {
         let total = service.selectedTotal(selected)
-        let cap = KanjiReviewService.sessionCap
+        let cap = PracticeReviewService.sessionCap
         let sessionSize = min(total, cap)
 
         return VStack(spacing: 8) {
@@ -100,7 +105,7 @@ struct KanjiReviewSetupView: View {
                 service.startSession(categories: selected)
                 showSession = true
             } label: {
-                Text(total > 0 ? "Start • \(sessionSize) kanji" : "Select a category")
+                Text(total > 0 ? "Start • \(sessionSize) \(kind.pluralNoun)" : "Select a category")
                     .font(.system(size: 18, weight: .bold))
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
@@ -117,7 +122,7 @@ struct KanjiReviewSetupView: View {
         .background(.bar)
     }
 
-    /// Burned kanji are the only category with a local schedule behind them, so they're the only
+    /// Burned items are the only category with a local schedule behind them, so they're the only
     /// ones there are stats to show. Hidden outright when none are tracked — the screen would have
     /// nothing on it.
     @ViewBuilder
@@ -125,7 +130,7 @@ struct KanjiReviewSetupView: View {
         let tracked = burnedStore.trackedCount
         if tracked > 0 {
             NavigationLink {
-                BurnedStatsView(store: store, burnedStore: burnedStore)
+                BurnedStatsView(kind: kind, store: store, burnedStore: burnedStore)
             } label: {
                 HStack(spacing: 8) {
                     Image(systemName: "chart.bar.xaxis")
@@ -152,34 +157,24 @@ struct KanjiReviewSetupView: View {
         }
     }
 
-    private func color(for category: KanjiCategory) -> Color {
-        switch category {
-        case .apprentice:  return Color("AccentPink")
-        case .guru:        return Color("WKPlum")
-        case .master:      return Color("WKTeal")
-        case .enlightened: return Color("WKGreen")
-        case .burned:      return Color(.darkGray)
-        }
-    }
-
     // MARK: - States
 
     private var loadingView: some View {
         VStack(spacing: 16) {
             ProgressView()
-            Text("Loading your kanji…")
+            Text("Loading your \(kind.formalPluralNoun)…")
                 .foregroundStyle(.secondary)
         }
     }
 
-    private var noKanjiView: some View {
+    private var emptyStateView: some View {
         VStack(spacing: 12) {
-            Image(systemName: "character.book.closed")
+            Image(systemName: kind.emptyStateSymbol)
                 .font(.system(size: 48))
                 .foregroundStyle(.secondary)
-            Text("No kanji yet")
+            Text("No \(kind.formalPluralNoun) yet")
                 .font(.title3.bold())
-            Text("Once you've started learning kanji on WaniKani, they'll show up here to practice.")
+            Text("Once you've started learning \(kind.formalPluralNoun) on WaniKani, they'll show up here to practice.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)

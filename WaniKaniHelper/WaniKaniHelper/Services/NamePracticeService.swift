@@ -1,7 +1,7 @@
 // Drives the Name Practice quiz: reading Japanese names, which WaniKani never teaches
 // because name readings (nanori) mostly aren't the on/kun readings its subjects cover.
 //
-// Local-only, like KanjiReviewService: nothing is submitted, no SRS is touched.
+// Local-only, like PracticeReviewService: nothing is submitted, no SRS is touched.
 import Foundation
 import Observation
 

@@ -1,10 +1,10 @@
-// Runs a local Kanji Review practice session: multiple-choice meaning/reading questions over the
-// kanji the user picked by SRS category. Reuses ReviewCardView for the card UI. Nothing is
-// submitted to WaniKani — this is pure self-practice.
+// Runs a local practice session for Kanji Review or Vocab Review: multiple-choice meaning
+// questions over the subjects the user picked by SRS category. Reuses ReviewCardView for the card
+// UI. Nothing is submitted to WaniKani — this is pure self-practice.
 import SwiftUI
 
-struct KanjiReviewSessionView: View {
-    let service: KanjiReviewService
+struct PracticeReviewSessionView: View {
+    let service: PracticeReviewService
     let store: SubjectStore
     @Environment(\.dismiss) private var dismiss
 
@@ -81,7 +81,7 @@ struct KanjiReviewSessionView: View {
             Image(systemName: "tray")
                 .font(.system(size: 48))
                 .foregroundStyle(.secondary)
-            Text("No kanji to review")
+            Text("No \(service.kind.formalPluralNoun) to review")
                 .font(.title3.bold())
         }
     }
@@ -89,10 +89,10 @@ struct KanjiReviewSessionView: View {
     // MARK: - Session complete
 
     private var completeView: some View {
-        let byKanji      = Dictionary(grouping: service.queue.filter { $0.answered }, by: { $0.subjectId })
-        let attempted    = byKanji.count
-        let correctCount = byKanji.filter { $0.value.allSatisfy { $0.choiceWasCorrect == true } }.count
-        let missedCount  = byKanji.filter { $0.value.contains { $0.choiceWasCorrect == false } }.count
+        let bySubject    = Dictionary(grouping: service.queue.filter { $0.answered }, by: { $0.subjectId })
+        let attempted    = bySubject.count
+        let correctCount = bySubject.filter { $0.value.allSatisfy { $0.choiceWasCorrect == true } }.count
+        let missedCount  = bySubject.filter { $0.value.contains { $0.choiceWasCorrect == false } }.count
         let pct          = attempted > 0 ? Int(Double(correctCount) / Double(attempted) * 100) : 0
 
         return VStack(spacing: 32) {
@@ -106,7 +106,7 @@ struct KanjiReviewSessionView: View {
                 VStack(spacing: 6) {
                     Text("Practice Complete!")
                         .font(.title.bold())
-                    Text("\(service.completedCount) of \(service.totalCount) kanji")
+                    Text("\(service.completedCount) of \(service.totalCount) \(service.kind.pluralNoun)")
                         .foregroundStyle(.secondary)
                 }
 

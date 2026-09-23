@@ -1,18 +1,20 @@
-// Stats screen for the local burned-kanji SRS, reached from the bottom of Kanji Review.
+// Stats screen for a local burned-subject SRS, reached from the bottom of Kanji Review or Vocab
+// Review. `kind` decides which schedule it reads and how the copy is worded.
 //
-// WaniKani retires a burned kanji and never shows it again, so this app's own schedule is the only
-// record of whether it has actually held up. This screen surfaces that record: how far each kanji
-// has been pushed out, and — the part the user is really after — which burned kanji they still get
+// WaniKani retires a burned item and never shows it again, so this app's own schedule is the only
+// record of whether it has actually held up. This screen surfaces that record: how far each item
+// has been pushed out, and — the part the user is really after — which burned items they still get
 // wrong versus which ones are solid.
 //
 // Everything here is local. None of it is on WaniKani and none of it is sent there.
 import SwiftUI
 
 struct BurnedStatsView: View {
+    let kind: PracticeKind
     let store: SubjectStore
-    let burnedStore: BurnedKanjiSRSStore
+    let burnedStore: any BurnedSRSStoring
 
-    @State private var stats: [BurnedKanjiStat] = []
+    @State private var stats: [BurnedStat] = []
     @State private var stageCounts: [Int] = []
     @State private var subjects: [Int: CachedSubject] = [:]
 
@@ -21,19 +23,19 @@ struct BurnedStatsView: View {
 
     // MARK: - Derived rankings
 
-    private var practiced: [BurnedKanjiStat] { stats.filter(\.isPracticed) }
+    private var practiced: [BurnedStat] { stats.filter(\.isPracticed) }
 
-    /// Every kanji carrying a miss it hasn't worked off yet, worst first. A miss is the whole
-    /// signal — a burned kanji the user still gets wrong is exactly what this screen exists to
+    /// Every item carrying a miss it hasn't worked off yet, worst first. A miss is the whole
+    /// signal — a burned item the user still gets wrong is exactly what this screen exists to
     /// surface — but it's cleared by a streak, so nothing is stuck here permanently.
-    private var needsWork: [BurnedKanjiStat] {
+    private var needsWork: [BurnedStat] {
         practiced
             .filter(\.needsWork)
             .sorted { $0.rankScore < $1.rankScore }
     }
 
     /// Clean records plus everything that has answered its way back, most-proven first.
-    private var strongest: [BurnedKanjiStat] {
+    private var strongest: [BurnedStat] {
         practiced
             .filter(\.isStrong)
             .sorted { $0.rankScore > $1.rankScore }
@@ -53,7 +55,7 @@ struct BurnedStatsView: View {
                     if !needsWork.isEmpty {
                         rankingSection(
                             title: "Needs Work",
-                            subtitle: "Missed here — \(BurnedKanjiStat.redemptionStreak) right in a row clears it",
+                            subtitle: "Missed here — \(BurnedStat.redemptionStreak) right in a row clears it",
                             icon: "exclamationmark.triangle.fill",
                             tint: weakColor,
                             entries: needsWork
@@ -120,12 +122,12 @@ struct BurnedStatsView: View {
         let peak = max(stageCounts.max() ?? 0, 1)
 
         return VStack(alignment: .leading, spacing: 10) {
-            sectionTitle("Review Stages", subtitle: "How far out each burned kanji is scheduled")
+            sectionTitle("Review Stages", subtitle: "How far out each burned item is scheduled")
 
             VStack(spacing: 6) {
                 ForEach(Array(stageCounts.enumerated()), id: \.offset) { stage, count in
                     HStack(spacing: 10) {
-                        Text(BurnedKanjiSRSStore.stageLabel(stage))
+                        Text(BurnedSRS.stageLabel(stage))
                             .font(.system(size: 11, weight: .semibold, design: .rounded))
                             .foregroundStyle(.secondary)
                             .frame(width: 38, alignment: .trailing)
@@ -173,7 +175,7 @@ struct BurnedStatsView: View {
         subtitle: String,
         icon: String,
         tint: Color,
-        entries: [BurnedKanjiStat]
+        entries: [BurnedStat]
     ) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 6) {
@@ -187,7 +189,7 @@ struct BurnedStatsView: View {
                 ForEach(Array(entries.enumerated()), id: \.element.id) { index, stat in
                     statRow(stat, tint: tint)
                     if index < entries.count - 1 {
-                        Divider().padding(.leading, 56)
+                        Divider().padding(.leading, kind == .kanji ? 56 : 100)
                     }
                 }
             }
@@ -196,14 +198,19 @@ struct BurnedStatsView: View {
         }
     }
 
-    private func statRow(_ stat: BurnedKanjiStat, tint: Color) -> some View {
+    private func statRow(_ stat: BurnedStat, tint: Color) -> some View {
         let subject = subjects[stat.subjectId]
 
         return HStack(spacing: 12) {
+            // Kanji are always one glyph, so a fixed column keeps the rows aligned. Vocabulary runs
+            // several characters wide and would be clipped by that, so it gets a wider box and
+            // shrinks to fit instead.
             Text(subject?.characters ?? subject?.slug ?? "?")
                 .font(.system(size: 22, weight: .medium))
                 .foregroundStyle(.primary)
-                .frame(width: 32)
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
+                .frame(width: kind == .kanji ? 32 : 76, alignment: .leading)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(subject?.meanings.first ?? "—")
@@ -228,11 +235,11 @@ struct BurnedStatsView: View {
     }
 
     // Record, schedule, and — for anything touched by the streak rule — where it stands with it.
-    private func detailLine(_ stat: BurnedKanjiStat) -> String {
+    private func detailLine(_ stat: BurnedStat) -> String {
         var parts = [
             "\(stat.totalCorrect) right",
             "\(stat.totalIncorrect) wrong",
-            BurnedKanjiSRSStore.stageLabel(stat.stage),
+            BurnedSRS.stageLabel(stat.stage),
         ]
         if stat.isRecovered {
             parts.append("recovered")
@@ -242,7 +249,7 @@ struct BurnedStatsView: View {
         return parts.joined(separator: " · ")
     }
 
-    private func accuracyLabel(_ stat: BurnedKanjiStat) -> String {
+    private func accuracyLabel(_ stat: BurnedStat) -> String {
         guard let accuracy = stat.accuracy else { return "—" }
         return "\(Int((accuracy * 100).rounded()))%"
     }
@@ -263,10 +270,10 @@ struct BurnedStatsView: View {
     private var footerNote: some View {
         VStack(alignment: .leading, spacing: 6) {
             if unpracticedCount > 0 {
-                Text("\(unpracticedCount) burned kanji haven't come up in practice here yet, so they aren't ranked.")
+                Text("\(unpracticedCount) burned \(kind.pluralNoun) haven't come up in practice here yet, so they aren't ranked.")
             }
-            Text("A missed kanji rejoins Strongest once you answer it right \(BurnedKanjiStat.redemptionStreak) times in a row.")
-            Text("Based only on Kanji Review practice in this app — nothing here affects your WaniKani SRS.")
+            Text("A missed item rejoins Strongest once you answer it right \(BurnedStat.redemptionStreak) times in a row.")
+            Text("Based only on \(kind.reviewTitle) practice in this app — nothing here affects your WaniKani SRS.")
         }
         .font(.caption)
         .foregroundStyle(.secondary)
@@ -278,9 +285,9 @@ struct BurnedStatsView: View {
             Image(systemName: "flame")
                 .font(.system(size: 48))
                 .foregroundStyle(.secondary)
-            Text("No burned kanji yet")
+            Text("No burned \(kind.pluralNoun) yet")
                 .font(.title3.bold())
-            Text("Once you burn kanji on WaniKani they'll be tracked here, and practicing them in Kanji Review builds this breakdown.")
+            Text("Once you burn \(kind.formalPluralNoun) on WaniKani they'll be tracked here, and practicing it in \(kind.reviewTitle) builds this breakdown.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
