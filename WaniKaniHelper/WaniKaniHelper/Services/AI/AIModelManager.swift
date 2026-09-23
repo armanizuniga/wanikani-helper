@@ -1,6 +1,7 @@
 // Coordinates backend selection, Qwen model download/load lifecycle, and backend switching.
 // Persists the active backend choice to UserDefaults so it survives force quits.
 // QwenBackend is preferred when downloaded; AppleFoundationBackend is the automatic fallback on iOS 26+.
+// Apple Cloud (iOS 27+) is Apple's Private Cloud Compute model, falling back to on-device itself.
 import Foundation
 import Observation
 
@@ -10,7 +11,7 @@ final class AIModelManager {
     static let shared = AIModelManager()
 
     enum ActiveBackend: String {
-        case apple, qwen, bundled, claude
+        case apple, appleCloud, qwen, bundled, claude
     }
 
     enum DownloadState: Equatable {
@@ -42,6 +43,12 @@ final class AIModelManager {
         let raw = UserDefaults.standard.string(forKey: "aiBackend") ?? (QwenBackend.isDownloaded ? "qwen" : "apple")
         activeBackend = ActiveBackend(rawValue: raw) ?? .apple
 
+        // A saved Apple Cloud choice can outlive its availability (entitlement removed, older iOS).
+        // Drop back to on-device rather than showing a backend that silently isn't used.
+        if activeBackend == .appleCloud, !isAppleCloudUsable {
+            activeBackend = .apple
+        }
+
         // Re-load model into memory if it was downloaded in a previous session.
         if QwenBackend.isDownloaded {
             Task { await QwenBackend.shared.loadIfDownloaded() }
@@ -50,13 +57,22 @@ final class AIModelManager {
 
     // MARK: - Backend selection
 
+    private var isAppleCloudUsable: Bool {
+        #if canImport(FoundationModels)
+        if #available(iOS 26.0, *) { return AppleFoundationBackend.cloud.isAvailable }
+        #endif
+        return false
+    }
+
     var isAnyBackendAvailable: Bool {
         if BundledSentenceStore.shared.isAvailable { return true }
         if ClaudeBackend.shared.isAvailable { return true }
         if QwenBackend.shared.isAvailable { return true }
         if downloadState == .downloaded { return true }
         #if canImport(FoundationModels)
-        if #available(iOS 26.0, *) { return AppleFoundationBackend.shared.isAvailable }
+        if #available(iOS 26.0, *) {
+            return AppleFoundationBackend.shared.isAvailable || AppleFoundationBackend.cloud.isAvailable
+        }
         #endif
         return false
     }
@@ -69,6 +85,9 @@ final class AIModelManager {
             return QwenBackend.shared
         }
         #if canImport(FoundationModels)
+        if activeBackend == .appleCloud, #available(iOS 26.0, *), AppleFoundationBackend.cloud.isAvailable {
+            return AppleFoundationBackend.cloud
+        }
         if #available(iOS 26.0, *), AppleFoundationBackend.shared.isAvailable {
             return AppleFoundationBackend.shared
         }
@@ -81,6 +100,11 @@ final class AIModelManager {
         case .claude where ClaudeBackend.shared.isAvailable: return "Claude"
         case .bundled: return "Pre-generated"
         case .qwen where downloadState == .downloaded: return "Qwen2.5-3B"
+        case .appleCloud:
+            #if canImport(FoundationModels)
+            if #available(iOS 26.0, *), AppleFoundationBackend.cloud.isAvailable { return "Apple Cloud" }
+            #endif
+            return "None"
         case .apple:
             #if canImport(FoundationModels)
             if #available(iOS 26.0, *), AppleFoundationBackend.shared.isAvailable { return "Apple AI" }
@@ -105,6 +129,8 @@ final class AIModelManager {
     }
 
     func switchToApple() { activeBackend = .apple }
+
+    func switchToAppleCloud() { activeBackend = .appleCloud }
 
     func switchToBundled() { activeBackend = .bundled }
 

@@ -7,6 +7,10 @@ import SwiftData
 
 @MainActor
 enum KnownKanji {
+    /// Extra attempts allowed after the first usable sentence, hunting for fewer unknown kanji.
+    /// Shared by `bestKnownKanjiSentence` and the Prompt Test screen so they measure the same thing.
+    nonisolated static let improvementTries = 2
+
     private static var cached: Set<Character>?
 
     static var all: Set<Character> {
@@ -20,8 +24,29 @@ enum KnownKanji {
         return set
     }
 
+    private static var cachedVocabulary: [KnownWord]?
+
+    /// Vocabulary at Master or above — what KnownVocabularyTool hands the model to build sentences
+    /// from. Same "known" rule as the kanji set.
+    static var vocabulary: [KnownWord] {
+        if let cachedVocabulary { return cachedVocabulary }
+        let descriptor = FetchDescriptor<CachedSubject>(
+            predicate: #Predicate { $0.type == "vocabulary" && $0.isMastered }
+        )
+        let found = (try? WaniKaniHelperApp.modelContainer.mainContext.fetch(descriptor)) ?? []
+        let words = found.compactMap { s -> KnownWord? in
+            guard let chars = s.characters else { return nil }
+            return KnownWord(characters: chars, meanings: s.meanings)
+        }
+        cachedVocabulary = words
+        return words
+    }
+
     /// Called after SRS status sync changes which items are mastered.
-    static func invalidate() { cached = nil }
+    static func invalidate() {
+        cached = nil
+        cachedVocabulary = nil
+    }
 
     /// Kanji in `sentence` the user doesn't know yet, in order of first appearance. The target
     /// word's kanji always count as known — the sentence exists to teach that word.
@@ -31,6 +56,12 @@ enum KnownKanji {
         return sentence.filter { $0.isKanji && !allowed.contains($0) && seen.insert($0).inserted }
             .map { $0 }
     }
+}
+
+/// Plain snapshot of a known vocabulary word, safe to hand to a tool running off the main actor.
+nonisolated struct KnownWord: Sendable {
+    let characters: String
+    let meanings: [String]
 }
 
 extension Character {
@@ -49,7 +80,7 @@ extension Character {
 func bestKnownKanjiSentence(
     target: String,
     maxAttempts: Int,
-    improvementTries: Int = 2,
+    improvementTries: Int = KnownKanji.improvementTries,
     attempt: () async throws -> AIGeneratedContent
 ) async -> AIGeneratedContent? {
     var best: (content: AIGeneratedContent, unknown: Int)?

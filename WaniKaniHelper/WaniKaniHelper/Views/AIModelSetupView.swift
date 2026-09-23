@@ -1,6 +1,9 @@
 // Settings view for managing the on-device AI model. Lets the user download Qwen2.5-3B,
 // track download progress, switch between backends, or delete the model to free space.
 import SwiftUI
+#if canImport(FoundationModels)
+import FoundationModels
+#endif
 
 struct AIModelSetupView: View {
     private var manager: AIModelManager { AIModelManager.shared }
@@ -16,6 +19,9 @@ struct AIModelSetupView: View {
             claudeSection
 
             #if canImport(FoundationModels)
+            if #available(iOS 27.0, *), AppleCloud.isSupportedOnDevice {
+                appleCloudSection
+            }
             if #available(iOS 26.0, *), AppleFoundationBackend.shared.isAvailable {
                 appleSection
             }
@@ -235,6 +241,64 @@ struct AIModelSetupView: View {
         }
     }
 
+    // MARK: - Apple Cloud section
+
+    #if canImport(FoundationModels)
+    @available(iOS 27.0, *)
+    private var appleCloudSection: some View {
+        Section {
+            HStack {
+                Image(systemName: "icloud")
+                    .foregroundStyle(.blue)
+                Text("Apple Cloud AI")
+                Spacer()
+                if manager.activeBackend == .appleCloud {
+                    Text("Active")
+                        .font(.caption.bold())
+                        .foregroundStyle(.green)
+                }
+            }
+
+            if let status = cloudStatusText {
+                Label(status.text, systemImage: status.warning ? "exclamationmark.triangle" : "info.circle")
+                    .font(.caption)
+                    .foregroundStyle(status.warning ? .orange : .secondary)
+            }
+
+            if manager.activeBackend != .appleCloud {
+                Button("Switch to Apple Cloud") {
+                    manager.switchToAppleCloud()
+                }
+                .disabled(!AppleFoundationBackend.cloud.isAvailable)
+            }
+        } header: {
+            Text("Apple Cloud (Private Cloud Compute)")
+        } footer: {
+            Text("Apple's larger model, run on Apple's servers — noticeably better Japanese than the on-device models. Needs an internet connection; requests aren't stored. When you're offline or the daily limit is reached, it uses Apple's on-device AI instead.")
+        }
+    }
+
+    // Quota and fallback state, shown only when there's something worth telling the user.
+    @available(iOS 27.0, *)
+    private var cloudStatusText: (text: String, warning: Bool)? {
+        let usage = AppleCloud.model.quotaUsage
+        let resetText = usage.resetDate.map { " Resets \($0.formatted(date: .omitted, time: .shortened))." } ?? ""
+        if usage.isLimitReached {
+            return ("Daily limit reached — using on-device AI.\(resetText)", true)
+        }
+        if case .belowLimit(let below) = usage.status, below.isApproachingLimit {
+            return ("Approaching the daily limit.\(resetText)", true)
+        }
+        if let reason = AppleFoundationBackend.cloud.lastCloudFallbackReason {
+            return ("Last request used on-device AI: \(reason)", false)
+        }
+        if case .unavailable(.systemNotReady) = AppleCloud.model.availability {
+            return ("Apple Cloud isn't ready yet. Check that Apple Intelligence is turned on.", true)
+        }
+        return nil
+    }
+    #endif
+
     // MARK: - Apple section
 
     #if canImport(FoundationModels)
@@ -244,7 +308,7 @@ struct AIModelSetupView: View {
             HStack {
                 Image(systemName: "apple.logo")
                     .foregroundStyle(.primary)
-                Text("Apple Foundation Models")
+                Text("Apple On-Device AI")
                 Spacer()
                 if manager.activeBackend == .apple {
                     Text("Active")
