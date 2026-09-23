@@ -65,6 +65,34 @@ struct SettingsView: View {
                 }
             }
 
+            #if DEBUG
+            Section("Developer") {
+                NavigationLink {
+                    PromptTestView(store: store, userLevel: user.level)
+                } label: {
+                    HStack(spacing: 12) {
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color.orange.opacity(0.15))
+                            .frame(width: 36, height: 36)
+                            .overlay {
+                                Image(systemName: "checklist")
+                                    .foregroundStyle(Color.orange)
+                                    .font(.system(size: 15, weight: .semibold))
+                            }
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text("Prompt Test")
+                                .font(.system(size: 16, weight: .medium, design: .rounded))
+                            Text("Run grammar prompts against the on-device model")
+                                .font(.system(size: 12))
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                    }
+                    .padding(.vertical, 4)
+                }
+            }
+            #endif
+
             Section("Account") {
                 Button {
                     showEditAPIKey = true

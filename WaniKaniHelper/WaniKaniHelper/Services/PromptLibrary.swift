@@ -19,6 +19,12 @@ struct PromptLibrary {
         guard let chosen = grammarPrompts.randomElement() else {
             return "You are a Japanese language tutor. Write one short, natural Japanese sentence using \(word) that demonstrates a grammar pattern. Plain Japanese, no furigana."
         }
+        return compose(chosen, word: word)
+    }
+
+    // Builds the final system prompt for one specific grammar point. The prompt test screen uses
+    // this directly so it can exercise every prompt instead of a random one.
+    func compose(_ chosen: GrammarPrompt, word: String) -> String {
         var prompt = chosen.systemPrompt.replacingOccurrences(of: "{{VOCAB_WORD}}", with: word)
         prompt = prompt.replacingOccurrences(
             of: "The word \(word) MUST appear in your Japanese sentence.",

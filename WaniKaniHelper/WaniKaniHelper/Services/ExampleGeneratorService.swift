@@ -1,4 +1,5 @@
-// On-device AI service that generates a single example sentence for a vocabulary word.
+// AI service that generates a single example sentence for a vocabulary word (inline card on
+// review and lesson screens).
 // Delegates to whichever AIBackend is active in AIModelManager.
 import Foundation
 import Observation
@@ -114,16 +115,29 @@ final class ExampleGeneratorService {
             return
         }
 
-        let userPrompt = "\(characters)を使って日本語の文を書いてください。"
-        print("[ExampleGenerator] userPrompt: \(userPrompt)")
+        let userPrompt = "Write a sentence using \(characters)."
 
-        do {
-            let result = try await AIModelManager.shared.currentBackend.generate(
-                systemPrompt: "",
-                userPrompt: userPrompt
-            )
-            state = .result(result)
-        } catch {
+        var attempts = 0
+        while attempts < 5 {
+            do {
+                let result = try await AIModelManager.shared.currentBackend.generate(
+                    systemPrompt: PromptLibrary.shared.compose(word: characters, reading: reading, meaning: meaning),
+                    userPrompt: userPrompt
+                )
+                if sentenceContainsWord(characters, in: result.japanese) {
+                    state = .result(result)
+                    return
+                }
+            } catch {
+                // safety guardrail or model error — retry with a fresh grammar prompt
+            }
+            attempts += 1
+        }
+
+        // The model couldn't produce a usable sentence — show a bundled one rather than an error.
+        if let sentence = BundledSentenceStore.shared.randomSentence(for: subjectId) {
+            state = .result(AIGeneratedContent(japanese: sentence))
+        } else {
             state = .failed
         }
     }
