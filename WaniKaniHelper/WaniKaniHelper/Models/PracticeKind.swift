@@ -3,7 +3,8 @@
 // screen — take one of these instead of being written twice.
 import Foundation
 
-enum PracticeKind: String, Identifiable {
+// nonisolated so it can back the Siri StartPracticeIntent parameter (AppEnum must be Sendable).
+nonisolated enum PracticeKind: String, Identifiable, CaseIterable {
     case kanji
     case vocabulary
 

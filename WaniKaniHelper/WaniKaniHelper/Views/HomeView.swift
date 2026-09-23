@@ -34,6 +34,7 @@ struct HomeView: View {
     @State private var showKanjiProgress = false
     @State private var showNamePractice = false
     @State private var offlineWarning: String?
+    private let router = AppRouter.shared
 
     var reviewCount: Int {
         let now = Date()
@@ -285,6 +286,9 @@ struct HomeView: View {
             .padding(.top, -35)
             .refreshable { await loadSummary() }
             .task { await loadSummary() }
+            .onChange(of: router.pending, initial: true) { _, destination in
+                if let destination { open(destination) }
+            }
             .navigationDestination(isPresented: $showReview) {
                 ReviewSessionView(store: store)
             }
@@ -590,6 +594,25 @@ struct HomeView: View {
     }
 
     // MARK: - Actions
+
+    // Navigates to a screen requested by a Siri/Shortcuts intent. Clears whatever is currently
+    // pushed first so the request always lands one level above the dashboard.
+    private func open(_ destination: AppRouter.Destination) {
+        router.pending = nil
+        showReview = false
+        showLessons = false
+        practiceKind = nil
+        kanaScript = nil
+        showNamePractice = false
+        showKanjiProgress = false
+        showingDetailType = nil
+
+        switch destination {
+        case .reviews:            showReview = true
+        case .lessons:            showLessons = true
+        case .practice(let kind): practiceKind = kind
+        }
+    }
 
     private func loadSummary() async {
         isLoadingSummary = true
