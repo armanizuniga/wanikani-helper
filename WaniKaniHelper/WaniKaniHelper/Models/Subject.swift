@@ -31,6 +31,9 @@ final class CachedSubject {
 
     var isPassed: Bool = false
     var isBurned: Bool = false
+    /// Currently at Master or above (includes burned). Unlike `isPassed` this can go back to false
+    /// when an item drops a stage. Drives which kanji count as "known" in generated sentences.
+    var isMastered: Bool = false
     var lastReviewedAt: Date?
 
     var subjectType: SubjectType { SubjectType(rawValue: type) ?? .vocabulary }

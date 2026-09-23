@@ -132,6 +132,7 @@ struct RootView: View {
                 if let status = try? await WaniKaniAPIClient.shared.fetchSubjectStatus() {
                     newStore.applyPassedStatus(passedIds: status.passed)
                     newStore.applyBurnedStatus(burnedIds: status.burned)
+                    newStore.applyMasteredStatus(masteredIds: status.mastered)
                     // Refresh the widget now that learned/burned status is up to date.
                     WidgetWordSync.update(using: newStore)
                 }

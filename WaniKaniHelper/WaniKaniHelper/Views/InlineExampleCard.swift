@@ -13,6 +13,7 @@ struct InlineExampleCard: View {
     @State private var service = ExampleGeneratorService()
     @State private var showTranslation = false
     @State private var question = ""
+    @State private var tappedKanji: CachedSubject?
 
     var body: some View {
         Group {
@@ -82,9 +83,16 @@ struct InlineExampleCard: View {
 
     private func resultView(example: AIGeneratedContent) -> some View {
         let kanjiHits = store.kanjiInSentence(example.japanese)
+        // Only kanji WaniKani teaches are highlighted — they're the ones with a sheet to open.
+        let unknown = KnownKanji.unknown(in: example.japanese, target: characters)
+            .filter { ch in kanjiHits.contains { $0.characters?.first == ch } }
 
         return VStack(alignment: .leading, spacing: 12) {
-            sentenceBlock(japanese: example.japanese)
+            SelectableLabel(
+                text: example.japanese, font: .systemFont(ofSize: 22), color: .label,
+                highlighted: unknown,
+                onTapHighlight: { ch in tappedKanji = kanjiHits.first { $0.characters?.first == ch } }
+            )
 
             HStack {
                 if #available(iOS 17.4, *) {
@@ -114,7 +122,7 @@ struct InlineExampleCard: View {
             }
 
             if !kanjiHits.isEmpty {
-                kanjiBreakdown(kanjiHits)
+                SentenceKanjiStrip(kanji: kanjiHits, unknown: Set(unknown)) { tappedKanji = $0 }
             }
 
             if AIModelManager.shared.activeBackend == .claude {
@@ -122,6 +130,7 @@ struct InlineExampleCard: View {
             }
         }
         .modifier(InlineTranslationPresenter(isPresented: $showTranslation, text: example.japanese))
+        .sheet(item: $tappedKanji) { KanjiHintSheet(subject: $0, store: store) }
     }
 
     // MARK: - Grammar explanation (Claude only)
@@ -247,39 +256,6 @@ struct InlineExampleCard: View {
         let q = question
         question = ""
         Task { await service.askFollowUp(q) }
-    }
-
-    private func kanjiBreakdown(_ kanji: [CachedSubject]) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("Kanji in sentence")
-                .font(.caption.bold())
-                .foregroundStyle(.secondary)
-                .textCase(.uppercase)
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    ForEach(kanji, id: \.id) { k in
-                        VStack(spacing: 3) {
-                            Text(k.characters ?? "")
-                                .font(.system(size: 20))
-                                .foregroundStyle(Color("AccentPink"))
-                            Text(k.meanings.first ?? "")
-                                .font(.caption2.bold())
-                                .foregroundStyle(Color("AccentPink"))
-                                .lineLimit(1)
-                        }
-                        .frame(minWidth: 48)
-                        .padding(.vertical, 6)
-                        .padding(.horizontal, 4)
-                        .background(Color("AccentPink").opacity(0.12))
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                    }
-                }
-            }
-        }
-    }
-
-    private func sentenceBlock(japanese: String) -> some View {
-        SelectableLabel(text: japanese, font: .systemFont(ofSize: 22), color: .label)
     }
 
     // MARK: - Failed

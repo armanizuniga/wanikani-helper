@@ -33,4 +33,14 @@ final class BundledSentenceStore {
         let saved = SavedSentenceStore.shared.sentences(for: subjectId)
         return (bundled + saved).randomElement()
     }
+
+    /// The bundled or saved sentence with the fewest kanji the user doesn't know yet (random among
+    /// ties), so pre-generated sentences get the same "readable first" treatment as AI ones.
+    @MainActor
+    func bestSentence(for subjectId: Int, target: String) -> String? {
+        let pool = (sentenceMap[subjectId] ?? []) + SavedSentenceStore.shared.sentences(for: subjectId)
+        return pool.shuffled().min {
+            KnownKanji.unknown(in: $0, target: target).count < KnownKanji.unknown(in: $1, target: target).count
+        }
+    }
 }

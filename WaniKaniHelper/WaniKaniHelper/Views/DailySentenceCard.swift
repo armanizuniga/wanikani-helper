@@ -10,6 +10,7 @@ struct DailySentenceCard: View {
 
     @State private var service = SentenceGeneratorService()
     @State private var showTranslation = false
+    @State private var tappedKanji: CachedSubject?
 
     private let accent = Color.indigo
 
@@ -69,6 +70,9 @@ struct DailySentenceCard: View {
 
     private func resultView(sentence: AIGeneratedContent, word: String, meaning: String) -> some View {
         let kanjiHits = store.kanjiInSentence(sentence.japanese)
+        // Only kanji WaniKani teaches are highlighted — they're the ones with a sheet to open.
+        let unknown = KnownKanji.unknown(in: sentence.japanese, target: word)
+            .filter { ch in kanjiHits.contains { $0.characters?.first == ch } }
 
         return VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 8) {
@@ -89,7 +93,11 @@ struct DailySentenceCard: View {
                 .buttonStyle(.plain)
             }
 
-            SelectableLabel(text: sentence.japanese, font: .systemFont(ofSize: 24), color: .label)
+            SelectableLabel(
+                text: sentence.japanese, font: .systemFont(ofSize: 24), color: .label,
+                highlighted: unknown,
+                onTapHighlight: { ch in tappedKanji = kanjiHits.first { $0.characters?.first == ch } }
+            )
 
             if #available(iOS 17.4, *) {
                 Button {
@@ -103,41 +111,13 @@ struct DailySentenceCard: View {
             }
 
             if !kanjiHits.isEmpty {
-                kanjiBreakdown(kanjiHits)
+                SentenceKanjiStrip(kanji: kanjiHits, unknown: Set(unknown)) { tappedKanji = $0 }
             }
         }
         .padding(14)
         .animation(.easeOut(duration: 0.18), value: showTranslation)
         .modifier(TranslationPresenter(isPresented: $showTranslation, text: sentence.japanese))
-    }
-
-    private func kanjiBreakdown(_ kanji: [CachedSubject]) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("Kanji in sentence")
-                .font(.caption.bold())
-                .foregroundStyle(.secondary)
-                .textCase(.uppercase)
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    ForEach(kanji, id: \.id) { k in
-                        VStack(spacing: 3) {
-                            Text(k.characters ?? "")
-                                .font(.system(size: 20))
-                                .foregroundStyle(Color("AccentPink"))
-                            Text(k.meanings.first ?? "")
-                                .font(.caption2.bold())
-                                .foregroundStyle(Color("AccentPink"))
-                                .lineLimit(1)
-                        }
-                        .frame(minWidth: 48)
-                        .padding(.vertical, 6)
-                        .padding(.horizontal, 4)
-                        .background(Color("AccentPink").opacity(0.12))
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                    }
-                }
-            }
-        }
+        .sheet(item: $tappedKanji) { KanjiHintSheet(subject: $0, store: store) }
     }
 
     // MARK: - Failed

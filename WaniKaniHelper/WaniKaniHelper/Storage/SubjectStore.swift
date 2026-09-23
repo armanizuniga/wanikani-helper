@@ -147,6 +147,21 @@ final class SubjectStore {
         save()
     }
 
+    /// Mirrors `applyPassedStatus` for Master-and-above, then drops the cached known-kanji set so
+    /// the next generated sentence sees the new state.
+    func applyMasteredStatus(masteredIds: Set<Int>) {
+        let descriptor = FetchDescriptor<CachedSubject>()
+        let all = (try? context.fetch(descriptor)) ?? []
+        for subject in all {
+            let shouldBeMastered = masteredIds.contains(subject.id)
+            if subject.isMastered != shouldBeMastered {
+                subject.isMastered = shouldBeMastered
+            }
+        }
+        save()
+        KnownKanji.invalidate()
+    }
+
     func markPassed(subjectId: Int) {
         let descriptor = FetchDescriptor<CachedSubject>(
             predicate: #Predicate { $0.id == subjectId }

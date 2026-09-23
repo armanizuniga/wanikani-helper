@@ -509,9 +509,10 @@ actor WaniKaniAPIClient {
     /// Every started assignment, reduced to the two status sets the app persists on CachedSubject.
     /// `started=true` is a superset of `passed=true`, so one paginated pass covers both and the
     /// burned set costs no extra requests against the rate limit.
-    func fetchSubjectStatus() async throws -> (passed: Set<Int>, burned: Set<Int>) {
+    func fetchSubjectStatus() async throws -> (passed: Set<Int>, burned: Set<Int>, mastered: Set<Int>) {
         var passed: Set<Int> = []
         var burned: Set<Int> = []
+        var mastered: Set<Int> = []
         var nextURL: URL? = URL(string: baseURL + "/assignments?started=true&per_page=1000")
         while let url = nextURL {
             let page: WKCollection<WKResource<WKAssignmentData>> = try await requestURL(url)
@@ -527,11 +528,16 @@ actor WaniKaniAPIClient {
                 if resource.data.burnedAt != nil {
                     burned.insert(resource.data.subjectId)
                 }
+                // Current stage on purpose: "known" for example sentences should follow the
+                // user's recall today, so an item that fell below Master stops counting.
+                if resource.data.srsStage >= SRSStage.master {
+                    mastered.insert(resource.data.subjectId)
+                }
             }
             nextURL = page.pages.nextUrl.flatMap { URL(string: $0) }
             if nextURL != nil { try await Task.sleep(nanoseconds: 1_100_000_000) }
         }
-        return (passed, burned)
+        return (passed, burned, mastered)
     }
 
     @discardableResult

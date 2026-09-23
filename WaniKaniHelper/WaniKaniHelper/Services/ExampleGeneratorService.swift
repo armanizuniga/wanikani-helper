@@ -84,7 +84,7 @@ final class ExampleGeneratorService {
         chat = []
 
         if AIModelManager.shared.activeBackend == .bundled {
-            if let sentence = BundledSentenceStore.shared.randomSentence(for: subjectId) {
+            if let sentence = BundledSentenceStore.shared.bestSentence(for: subjectId, target: characters) {
                 state = .result(AIGeneratedContent(japanese: sentence))
             } else {
                 state = .failed
@@ -92,50 +92,40 @@ final class ExampleGeneratorService {
             return
         }
 
+        // Both paths keep the attempt with the fewest kanji the user hasn't mastered (see KnownKanji).
         if AIModelManager.shared.activeBackend == .claude {
-            var attempts = 0
-            while attempts < 3 {
-                do {
-                    let result = try await ClaudeBackend.shared.generateSentence(
-                        targetWord: characters, reading: reading, meaning: meaning,
-                        userLevel: WKUserData.cachedLevel, avoiding: avoiding
-                    )
-                    if sentenceContainsWord(characters, in: result.japanese) {
-                        // Persist into the pre-generated pool so it accumulates over time.
-                        SavedSentenceStore.shared.append(result.japanese, for: subjectId)
-                        state = .result(result)
-                        return
-                    }
-                } catch {
-                    // network / API error — retry
-                }
-                attempts += 1
+            let best = await bestKnownKanjiSentence(target: characters, maxAttempts: 3) {
+                try await ClaudeBackend.shared.generateSentence(
+                    targetWord: characters, reading: reading, meaning: meaning,
+                    userLevel: WKUserData.cachedLevel, avoiding: avoiding
+                )
             }
-            state = .failed
+            if let best {
+                // Persist into the pre-generated pool so it accumulates over time.
+                SavedSentenceStore.shared.append(best.japanese, for: subjectId)
+                state = .result(best)
+            } else {
+                state = .failed
+            }
             return
         }
 
         let userPrompt = "Write a sentence using \(characters)."
 
-        var attempts = 0
-        while attempts < 5 {
-            do {
-                let result = try await AIModelManager.shared.currentBackend.generate(
-                    systemPrompt: PromptLibrary.shared.compose(word: characters, reading: reading, meaning: meaning),
-                    userPrompt: userPrompt
-                )
-                if sentenceContainsWord(characters, in: result.japanese) {
-                    state = .result(result)
-                    return
-                }
-            } catch {
-                // safety guardrail or model error — retry with a fresh grammar prompt
-            }
-            attempts += 1
+        // Each attempt composes a fresh grammar prompt, so retries also vary the grammar point.
+        let best = await bestKnownKanjiSentence(target: characters, maxAttempts: 5) {
+            try await AIModelManager.shared.currentBackend.generate(
+                systemPrompt: PromptLibrary.shared.compose(word: characters, reading: reading, meaning: meaning),
+                userPrompt: userPrompt
+            )
+        }
+        if let best {
+            state = .result(best)
+            return
         }
 
         // The model couldn't produce a usable sentence — show a bundled one rather than an error.
-        if let sentence = BundledSentenceStore.shared.randomSentence(for: subjectId) {
+        if let sentence = BundledSentenceStore.shared.bestSentence(for: subjectId, target: characters) {
             state = .result(AIGeneratedContent(japanese: sentence))
         } else {
             state = .failed
