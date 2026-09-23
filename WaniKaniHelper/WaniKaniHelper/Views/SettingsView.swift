@@ -223,6 +223,7 @@ struct SettingsView: View {
         KeychainService.delete()
         UserDefaults.standard.removeObject(forKey: "cachedUser")
         WidgetWordSync.clear()
+        SubjectSpotlightIndex.clear()
         onSignOut()
     }
 }

@@ -44,5 +44,37 @@ struct WaniKaniShortcuts: AppShortcutsProvider {
             shortTitle: "Burned Practice",
             systemImageName: "flame.fill"
         )
+        // No word in the phrase: Siri asks "Which word?" and resolves the answer through
+        // SubjectEntityQuery. Thousands of items are too many for parameterized phrases.
+        AppShortcut(
+            intent: LookUpSubjectIntent(),
+            phrases: [
+                "Look up a word in \(.applicationName)",
+                "Look up a kanji in \(.applicationName)",
+                "What does a word mean in \(.applicationName)",
+            ],
+            shortTitle: "Look Up Word",
+            systemImageName: "character.book.closed"
+        )
+        // On iOS 27, "explain this word" / "say this" resolve the word from the screen
+        // (OnscreenSubject.swift); these phrases cover asking from anywhere else.
+        AppShortcut(
+            intent: ExplainSubjectIntent(),
+            phrases: [
+                "Explain a word in \(.applicationName)",
+                "Explain a kanji in \(.applicationName)",
+            ],
+            shortTitle: "Explain Word",
+            systemImageName: "text.book.closed"
+        )
+        AppShortcut(
+            intent: SaySubjectIntent(),
+            phrases: [
+                "Say a word in \(.applicationName)",
+                "Pronounce a word in \(.applicationName)",
+            ],
+            shortTitle: "Say Word",
+            systemImageName: "speaker.wave.2.fill"
+        )
     }
 }

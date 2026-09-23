@@ -24,6 +24,7 @@ struct LessonSessionView: View {
                 emptyView
             } else if let item = service.current {
                 lessonView(item: item)
+                    .onscreenSubject(item.subject)
             }
         }
         .navigationTitle("Lessons")

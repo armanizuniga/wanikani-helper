@@ -79,6 +79,7 @@ struct KanjiHintSheet: View {
         }
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
+        .onscreenSubject(subject)
     }
 
     private var header: some View {

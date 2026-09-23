@@ -22,6 +22,7 @@ struct CheckReviewsIntent: AppIntent {
     static let title: LocalizedStringResource = "Check Reviews"
     static let description = IntentDescription("See how many WaniKani reviews and lessons are waiting.")
 
+    @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog & ShowsSnippetView {
         // Siri can run this before the app has launched, so the API client may not be set up yet.
         guard let key = KeychainService.load() else { throw WaniKaniIntentError.notSignedIn }
@@ -142,12 +143,4 @@ struct StartPracticeIntent: AppIntent {
         AppRouter.shared.pending = .practice(kind)
         return .result()
     }
-}
-
-nonisolated extension PracticeKind: AppEnum {
-    static let typeDisplayRepresentation: TypeDisplayRepresentation = "Practice"
-    static let caseDisplayRepresentations: [PracticeKind: DisplayRepresentation] = [
-        .kanji: DisplayRepresentation(title: "burned kanji", synonyms: ["kanji", "kanji review"]),
-        .vocabulary: DisplayRepresentation(title: "burned vocab", synonyms: ["vocab", "vocabulary", "burned vocabulary", "vocab review"]),
-    ]
 }

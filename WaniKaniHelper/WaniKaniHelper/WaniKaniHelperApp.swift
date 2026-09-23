@@ -7,16 +7,26 @@ import SwiftData
 
 @main
 struct WaniKaniHelperApp: App {
+    /// One container for the whole process. App Intents (Siri, Spotlight) read subjects through
+    /// it too, and can run before any view exists, so it can't come from the view environment.
+    static let modelContainer: ModelContainer = {
+        do {
+            return try ModelContainer(for:
+                CachedSubject.self,
+                KanaSRSEntry.self,
+                BurnedKanjiSRSEntry.self,
+                BurnedVocabSRSEntry.self
+            )
+        } catch {
+            fatalError("Failed to create model container: \(error)")
+        }
+    }()
+
     var body: some Scene {
         WindowGroup {
             RootView()
         }
-        .modelContainer(for: [
-            CachedSubject.self,
-            KanaSRSEntry.self,
-            BurnedKanjiSRSEntry.self,
-            BurnedVocabSRSEntry.self,
-        ])
+        .modelContainer(Self.modelContainer)
     }
 }
 
@@ -107,6 +117,12 @@ struct RootView: View {
                 if let data = try? JSONEncoder().encode(fresh) {
                     UserDefaults.standard.set(data, forKey: "cachedUser")
                 }
+            }
+
+            // Keep Spotlight/Siri's copy of unlocked kanji and vocab current. No-op unless the
+            // level changed or the index is a week old.
+            if let level = currentUser?.level {
+                Task { await SubjectSpotlightIndex.refreshIfNeeded(level: level) }
             }
 
             // Sync passed/burned status in background so isPassed and isBurned are accurate across

@@ -66,6 +66,7 @@ struct ReviewCardView: View {
                 KanjiHintSheet(subject: kanji, store: store)
             }
         }
+        .onscreenSubject(item.subject)
     }
 
     // MARK: - Easy-mode kanji hints

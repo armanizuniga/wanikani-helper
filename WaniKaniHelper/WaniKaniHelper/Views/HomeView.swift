@@ -34,6 +34,7 @@ struct HomeView: View {
     @State private var showKanjiProgress = false
     @State private var showNamePractice = false
     @State private var offlineWarning: String?
+    @State private var openedSubject: CachedSubject?
     private let router = AppRouter.shared
 
     var reviewCount: Int {
@@ -310,6 +311,9 @@ struct HomeView: View {
             }
             .navigationDestination(isPresented: $showKanjiProgress) {
                 KanjiProgressView(store: store)
+            }
+            .sheet(item: $openedSubject) { subject in
+                KanjiHintSheet(subject: subject, store: store)
             }
             .sheet(item: $showingDetailType) { type in
                 LevelDetailSheet(
@@ -606,11 +610,13 @@ struct HomeView: View {
         showNamePractice = false
         showKanjiProgress = false
         showingDetailType = nil
+        openedSubject = nil
 
         switch destination {
         case .reviews:            showReview = true
         case .lessons:            showLessons = true
         case .practice(let kind): practiceKind = kind
+        case .subject(let id):    openedSubject = store.subjectMap(ids: [id])[id]
         }
     }
 

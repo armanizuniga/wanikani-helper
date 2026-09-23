@@ -13,6 +13,7 @@ final class AppRouter {
         case reviews
         case lessons
         case practice(PracticeKind)
+        case subject(Int)   // detail sheet for one kanji/vocab item (Spotlight, Open Word)
     }
 
     var pending: Destination?
